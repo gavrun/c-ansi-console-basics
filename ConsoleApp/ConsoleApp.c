@@ -20,10 +20,12 @@
 #include <stdio.h>
 //#include <windows.h> // Windows console support UTF-8 and Cyrillic
 #include <string.h>
+#include <stdbool.h> //C99 introduced <stdbool.h> for bool, true, false. In C89, we use _Bool or integers.
 
 
 // Functions declarations (prototype)
 void demoConsoleInOut(void);
+void demoVariablesAndTypes(void);
 
 
 // Types and structures definitions
@@ -48,7 +50,8 @@ int main()
     printf("\nUncomment a demo function if you don't see anything.\n");
 
     // Uncomment a demo function
-    demoConsoleInOut();
+    //demoConsoleInOut();
+    demoVariablesAndTypes();
 
 
     return 0;
@@ -61,6 +64,9 @@ int main()
 // Function definitions (implementation)
 
 
+/*
+ * Demonstrates console input and output operations.
+ */
 void demoConsoleInOut(void) 
 {
     /* Declare all variables at the beginning of the block (C89 standard) */
@@ -85,7 +91,6 @@ void demoConsoleInOut(void)
     fprintf(stdout, "This message is printed to standard output.\n");
     fprintf(stderr, "This is an example of an error message.\n");
 
-
     /* --- Character I/O --- */
     printf("\nSection: Character I/O (getchar, putchar)\n");
     printf("Please enter a single character: ");
@@ -104,7 +109,6 @@ void demoConsoleInOut(void)
     {
         /* Keep reading and discarding characters until newline is found */
     }
-
 
     /* --- String I/O --- */
     printf("\nSection: String I/O (fgets, puts)\n");
@@ -135,7 +139,6 @@ void demoConsoleInOut(void)
 
     printf("Hello, %s!\n", name);
 
-
     /* --- Formatted I/O --- */
     printf("\nSection: Formatted I/O (scanf, printf)\n");
     /*
@@ -163,6 +166,105 @@ void demoConsoleInOut(void)
         printf("Error: Invalid input.\n");
     }
 }
+
+
+/*
+ * Demonstrates variable declaration, basic data types, and their sizes.
+ */
+void demoVariablesAndTypes(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    char grade;
+
+    short temperature;
+    int population;
+    long national_debt;
+    /* 'long long' was officially added in C99, but is widely supported by C89 compilers as an extension. */
+    long long world_population;
+
+    unsigned char age;
+    unsigned int distance_to_sun;
+
+    float pi_approx;
+    double pi_precise;
+    long double pi_extended;
+
+    /* _Bool is the underlying type for bool from <stdbool.h> (C99) */
+    bool is_active;
+
+    printf("\n--- DEMO: Variables and Basic Data Types ---\n");
+    printf("Note: The exact size of data types can vary between systems (e.g., 32-bit vs 64-bit).\n");
+
+    /* --- Character Type --- */
+    printf("\nSection: Character Type (char)\n");
+    grade = 'A';
+    printf("  Variable 'grade' (char): '%c'\n", grade);
+    printf("  A char is a small integer. '%c' as a number is: %d\n", grade, grade);
+    printf("  Size of char: %zu byte(s)\n", sizeof(char));
+
+    /* --- Integer Types (Signed) --- */
+    printf("\nSection: Integer Types (short, int, long)\n");
+    temperature = -5;
+    population = 1350000;
+    national_debt = 23000000000L;    /* 'L' suffix is for long constants */
+    world_population = 7800000000LL; /* 'LL' suffix is for long long constants */
+
+    printf("  Variable 'temperature' (short): %hd\n", temperature);
+    printf("  Size of short: %zu byte(s)\n", sizeof(short));
+
+    printf("  Variable 'population' (int): %d\n", population);
+    printf("  Size of int: %zu byte(s)\n", sizeof(int));
+
+    printf("  Variable 'national_debt' (long): %ld\n", national_debt);
+    printf("  Size of long: %zu byte(s)\n", sizeof(long));
+
+    printf("  Variable 'world_population' (long long): %lld (Note: C99 standard)\n", world_population);
+    printf("  Size of long long: %zu byte(s)\n", sizeof(long long));
+
+    /* --- Unsigned Integer Types --- */
+    printf("\nSection: Unsigned Integer Types\n");
+    age = 255; /* An unsigned char can hold values from 0 to 255 */
+    distance_to_sun = 150000000U; /* 'U' suffix for unsigned */
+    printf("  Unsigned types cannot be negative and have a larger positive range.\n");
+    printf("  Variable 'age' (unsigned char): %u\n", age);
+    printf("  Size of unsigned char: %zu byte(s)\n", sizeof(unsigned char));
+    printf("  Variable 'distance_to_sun' (unsigned int): %u\n", distance_to_sun);
+    printf("  Size of unsigned int: %zu byte(s)\n", sizeof(unsigned int));
+
+    /* --- Floating-Point Types --- */
+    printf("\nSection: Floating-Point Types (float, double, long double)\n");
+    pi_approx = 3.14159f;        /* 'f' suffix for float */
+    pi_precise = 3.1415926535;
+    pi_extended = 3.141592653589793238L; /* 'L' suffix for long double */
+
+    printf("  Variable 'pi_approx' (float): %f\n", pi_approx);
+    printf("  Size of float: %zu byte(s)\n", sizeof(float));
+
+    printf("  Variable 'pi_precise' (double): %.10f\n", pi_precise);
+    printf("  Size of double: %zu byte(s)\n", sizeof(double));
+
+    printf("  Variable 'pi_extended' (long double): %.18Lf\n", pi_extended);
+    printf("  Size of long double: %zu byte(s)\n", sizeof(long double));
+
+    /* --- Boolean Type (C99) --- */
+    printf("\nSection: Boolean Type (bool - C99 Standard)\n");
+    is_active = true; /* Can be 'true' or 'false' */
+    printf("  C89 has no built-in boolean. C99 introduced <stdbool.h>.\n");
+    printf("  Often, integers are used (0 for false, non-zero for true).\n");
+    printf("  Variable 'is_active' (bool): %d (1=true, 0=false)\n", is_active);
+    printf("  Size of bool: %zu byte(s)\n", sizeof(bool));
+
+    /* --- Void Type --- */
+    printf("\nSection: Void Type\n");
+    printf("  The 'void' type has three main uses:\n");
+    printf("  1. To specify a function returns no value (e.g., void my_func()).\n");
+    printf("  2. To specify a function takes no arguments (e.g., int main(void)).\n");
+    printf("  3. As a generic pointer (void*), covered in the pointers demo.\n");
+    printf("  You cannot declare a variable of type void.\n");
+}
+
+
+
 
 
 
