@@ -26,6 +26,7 @@
 // Functions declarations (prototype)
 void demoConsoleInOut(void);
 void demoVariablesAndTypes(void);
+void demoTypesCast(void);
 
 
 // Types and structures definitions
@@ -51,7 +52,8 @@ int main()
 
     // Uncomment a demo function
     //demoConsoleInOut();
-    demoVariablesAndTypes();
+    //demoVariablesAndTypes();
+    demoTypesCast();
 
 
     return 0;
@@ -264,7 +266,77 @@ void demoVariablesAndTypes(void)
 }
 
 
+/*
+ * Demonstrates implicit and explicit type casting.
+ */
+void demoTypesCast(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    int integer_val;
+    double double_val;
 
+    int numerator, denominator;
+    double result_double;
+    int result_int;
+
+    int large_int;
+    char small_char;
+
+    printf("\n--- DEMO: Type Casting ---\n");
+
+    /* --- Implicit Type Conversion (Coercion) --- */
+    printf("\nSection: Implicit Type Conversion\n");
+    printf("The compiler automatically converts types when it's safe (promotion).\n");
+
+    integer_val = 10;
+    double_val = integer_val; /* Implicitly converted from int to double */
+    printf("  int 10 assigned to a double becomes: %f\n", double_val);
+
+    printf("Data loss can occur with implicit narrowing conversions.\n");
+    double_val = 9.99;
+    integer_val = double_val; /* Implicitly converted, fractional part is lost */
+    printf("  double 9.99 assigned to an int becomes: %d (fraction is truncated)\n", integer_val);
+
+    /* --- Explicit Type Conversion (Casting) --- */
+    printf("\nSection: Explicit Type Conversion (Casting)\n");
+    printf("We use the (new_type) syntax to force a conversion.\n");
+
+    /* Example 1: The most common use case - integer division */
+    printf("\n  Example 1: Forcing Floating-Point Division\n");
+    numerator = 10;
+    denominator = 4;
+
+    /* Without casting, the result is an integer because both operands are integers */
+    result_int = numerator / denominator;
+    printf("    10 / 4 (integer division) = %d\n", result_int);
+
+    /* By casting one of the operands to double, we force floating-point division */
+    result_double = (double)numerator / denominator;
+    printf("    (double)10 / 4 (floating-point division) = %f\n", result_double);
+
+    /* Example 2: Casting a float/double to an integer */
+    printf("\n  Example 2: Casting a Double to an Integer\n");
+    double_val = 42.85;
+    /* The cast explicitly tells the compiler we want to truncate the value */
+    integer_val = (int)double_val;
+    printf("    (int)42.85 results in: %d (value is truncated, not rounded)\n", integer_val);
+
+    /* Example 3: Casting a larger integer type to a smaller one */
+    printf("\n  Example 3: Casting an Integer to a Char\n");
+    large_int = 321; /* Binary: 0001 0100 0001 */
+    /* A char can only hold 1 byte (8 bits). The higher bits of the int are discarded. */
+    small_char = (char)large_int; /* Keeps only the lower 8 bits: 0100 0001 */
+
+    printf("    int 321 cast to a char.\n");
+    printf("    The resulting character is '%c'\n", small_char);
+    printf("    Its integer value is %d (which is ASCII for 'A')\n", small_char);
+
+    /* Example 4: A note on casting pointers */
+    printf("\n  Example 4: A Note on Pointers\n");
+    printf("    Type casting is also crucial when working with generic pointers (void*).\n");
+    printf("    This allows a pointer to point to any data type.\n");
+    printf("    This topic will be explored in the pointers demo.\n");
+}
 
 
 
