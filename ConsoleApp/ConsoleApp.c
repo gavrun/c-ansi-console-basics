@@ -24,7 +24,7 @@
 #include <stddef.h> // Required for NULL 
 
 
-/* File Scope (Global) Variables */
+// File Scope (Global) Variables
 /*
  * This variable is declared outside of any function.
  * It is accessible from any function within this file.
@@ -37,7 +37,6 @@ int global_variable = 100;
  * is restricted to ONLY this file. It cannot be accessed from other files.
  */
 static int file_static_variable = 200;
-
 
 
 // Functions declarations (prototype)
@@ -68,6 +67,17 @@ void performCalculation(int x, int y, int (*calculator_func)(int, int));
 int (*getOperation(char op_char))(int, int);
 void demoScopes(void);
 void static_counter_function(void);
+void demoFunctionDef(void);
+int multiply(int a, int b);
+int divide(int a, int b);
+/*
+ * Here, we define 'OperationFuncPtr' as a new name (alias) for the type:
+ * "pointer to a function that takes two integers and returns an integer".
+ * This makes the syntax for using function pointers much cleaner.
+ */
+typedef int (*OperationFuncPtr)(int, int);
+/* A function that takes the typedef'd function pointer as a parameter */
+void executeOperation(int x, int y, OperationFuncPtr operation);
 
 
 
@@ -102,8 +112,9 @@ int main()
     //demoControlFlowStructures();
     //demoFunctions();
     //demoFunctionPtr();
-    demoScopes();
-    printf("\nAfter demoScopes finished, global_variable is now: %d\n", global_variable);
+    //demoScopes();
+    //printf("\nAfter demoScopes finished, global_variable is now: %d\n", global_variable);
+    demoFunctionDef();
 
 
 
@@ -1093,6 +1104,107 @@ void static_counter_function(void)
     static_counter++;
     printf("    -> Counter function call. 'static_counter' is now: %d\n", static_counter);
 }
+
+
+/*
+ * Demonstrates using typedef to simplify function pointer syntax.
+ */
+void demoFunctionDef(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+
+    /* The "old way" without typedef */
+    int (*raw_func_ptr)(int, int);
+
+    /* The "new way" using our typedef alias */
+    OperationFuncPtr aliased_func_ptr;
+
+    int result;
+
+    printf("\n--- DEMO: Function Types and Typedef ---\n");
+
+    /* --- Comparing Declaration Syntax --- */
+    printf("\nSection: Comparing Declaration Syntax\n");
+    printf("  The 'raw' syntax for a function pointer is complex and hard to read:\n");
+    printf("    int (*raw_func_ptr)(int, int);\n");
+
+    printf("  Using 'typedef', the declaration becomes simple and clear:\n");
+    printf("    typedef int (*OperationFuncPtr)(int, int);\n");
+    printf("    OperationFuncPtr aliased_func_ptr;\n");
+
+    /* --- Assigning and Using the Typedef'd Pointer --- */
+    printf("\nSection: Using the Typedef'd Pointer\n");
+
+    /* Assignment is the same for both */
+    raw_func_ptr = &multiply;
+    aliased_func_ptr = &multiply;
+
+    result = aliased_func_ptr(10, 5);
+    printf("  Calling function via aliased pointer: 10 * 5 = %d\n", result);
+
+    aliased_func_ptr = &divide;
+    result = aliased_func_ptr(10, 5);
+    printf("  Calling function via aliased pointer: 10 / 5 = %d\n", result);
+
+    /* --- Using Typedef for Function Parameters --- */
+    printf("\nSection: Using Typedef for Function Parameters\n");
+    printf("  Using the alias makes function prototypes much easier to understand.\n");
+    printf("  Compare:\n");
+    printf("    void func(int, int, int (*op)(int, int)); // Hard to read\n");
+    printf("    void func(int, int, OperationFuncPtr op); // Easy to read\n");
+
+    printf("  Executing 'multiply' via the executeOperation function:\n");
+    executeOperation(20, 4, multiply);
+
+    printf("  Executing 'divide' via the executeOperation function:\n");
+    executeOperation(20, 4, divide);
+}
+
+/* 
+ * Helper functions for the demoFunctionDef() demo
+ */
+int multiply(int a, int b)
+{
+    return a * b;
+}
+
+int divide(int a, int b)
+{
+    /* Basic check to avoid division by zero */
+    if (b != 0)
+    {
+        return a / b;
+    }
+    return 0;
+}
+
+/*
+ * The third parameter, 'operation', is of our aliased function pointer type.
+ * This makes the function signature clean and self-documenting.
+ */
+void executeOperation(int x, int y, OperationFuncPtr operation)
+{
+    int result;
+
+    /* Check if the passed pointer is valid before calling it */
+    if (operation != NULL)
+    {
+        result = operation(x, y);
+        printf("    -> Result from executeOperation: %d\n", result);
+    }
+    else
+    {
+        printf("    -> Error: A NULL function pointer was passed.\n");
+    }
+}
+
+
+
+
+
+
+
+
 
 
 
