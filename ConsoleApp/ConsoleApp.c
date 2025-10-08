@@ -43,6 +43,13 @@ void passByValueExample(int num);
 void passByReferenceExample(int* num_ptr);
 void printWithConstParam(const int value);
 long factorial(int n);
+void demoFunctionPtr(void);
+int add(int a, int b);
+int subtract(int a, int b);
+/* A function that takes a function pointer as an argument */
+void performCalculation(int x, int y, int (*calculator_func)(int, int));
+/* A function that returns a function pointer */
+int (*getOperation(char op_char))(int, int);
 
 
 
@@ -75,7 +82,8 @@ int main()
     //demoPointers();
     //demoConstantPtr();
     //demoControlFlowStructures();
-    demoFunctions();
+    //demoFunctions();
+    demoFunctionPtr();
 
 
     return 0;
@@ -809,7 +817,6 @@ void demoFunctions(void)
     printf("  (Calculation: 5 * 4 * 3 * 2 * 1)\n");
 }
 
-
 /*
  * This is a simple implementation of a function.
  */
@@ -866,9 +873,119 @@ long factorial(int n)
 }
 
 
+/*
+ * Demonstrates declaring, assigning, and using function pointers.
+ */
+void demoFunctionPtr(void)
+{
+    /*
+     * Declaration of a function pointer.
+     * Syntax: return_type (*pointer_name)(parameter_types);
+     * This declares 'operation_ptr' as a pointer to a function that
+     * takes two integers as arguments and returns an integer.
+     */
+    int (*operation_ptr)(int, int);
+    int result;
 
+    printf("\n--- DEMO: Function Pointers ---\n");
 
+    /* --- Basic Declaration and Usage --- */
+    printf("\nSection: Basic Function Pointer Usage\n");
 
+    /* Assign the address of the 'add' function to the pointer. */
+    /* The '&' is optional but makes the intent clear. */
+    operation_ptr = &add;
+
+    /* Call the function through the pointer. */
+    /* The explicit dereference '(*operation_ptr)' is the classic way. */
+    result = (*operation_ptr)(10, 5);
+    printf("  Calling via (*operation_ptr)(10, 5) where ptr points to 'add': %d\n", result);
+
+    /* Re-assign the pointer to a different, compatible function. */
+    operation_ptr = &subtract;
+
+    /* You can also call it implicitly, which is more common in modern code. */
+    result = operation_ptr(10, 5);
+    printf("  Calling via operation_ptr(10, 5) where ptr points to 'subtract': %d\n", result);
+
+    /* --- Passing a Function Pointer as an Argument --- */
+    printf("\nSection: Passing a Function Pointer to Another Function\n");
+    printf("  This allows for creating flexible, reusable code (e.g., callbacks).\n");
+
+    /* Pass the 'add' function itself as an argument. */
+    performCalculation(20, 8, add);
+
+    /* Pass the 'subtract' function as an argument. */
+    performCalculation(20, 8, subtract);
+
+    /* --- Returning a Function Pointer from a Function --- */
+    printf("\nSection: Returning a Function Pointer from Another Function\n");
+
+    /* Get a pointer to the appropriate function based on the character. */
+    operation_ptr = getOperation('+');
+
+    /* Always check if the returned pointer is valid before using it. */
+    if (operation_ptr != NULL)
+    {
+        result = operation_ptr(100, 25);
+        printf("  The function for '+' returned a pointer. Result: %d\n", result);
+    }
+
+    operation_ptr = getOperation('-');
+    if (operation_ptr != NULL)
+    {
+        result = operation_ptr(100, 25);
+        printf("  The function for '-' returned a pointer. Result: %d\n", result);
+    }
+
+    /* Test the case where an invalid operator is provided. */
+    operation_ptr = getOperation('/');
+    if (operation_ptr == NULL)
+    {
+        printf("  The function for '/' returned NULL as expected.\n");
+    }
+}
+
+/* 
+* Helper functions for the demoFunctionPtr() demo 
+*/
+int add(int a, int b)
+{
+    return a + b;
+}
+
+int subtract(int a, int b)
+{
+    return a - b;
+}
+
+/*
+ * This function accepts a function pointer 'calculator_func' as its third argument.
+ * It then uses this pointer to perform the actual calculation.
+ */
+void performCalculation(int x, int y, int (*calculator_func)(int, int))
+{
+    int result = calculator_func(x, y);
+    printf("    -> performCalculation result is: %d\n", result);
+}
+
+/*
+ * This function's return type is a pointer to a function: int (*)(int, int).
+ * Based on the 'op_char' argument, it returns a pointer to the 'add' or 'subtract'
+ * function, or NULL if the operator is not recognized.
+ */
+int (*getOperation(char op_char))(int, int)
+{
+    switch (op_char)
+    {
+    case '+':
+        return &add;
+    case '-':
+        return &subtract;
+    default:
+        return NULL; /* Return NULL for unsupported operations */
+    }
+}
 
 
 
