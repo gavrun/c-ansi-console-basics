@@ -148,6 +148,7 @@ void demoFile(void);
 void demoFileInOut(void);
 void demoBinInOut(void);
 void demoUnion(void);
+void demoBitFields(void);
 
 
 // Types and structures definitions
@@ -226,6 +227,22 @@ union FloatBytes {
     unsigned char bytes[4]; // Assume that float takes 4 bytes
 };
 
+/*
+ * A bit-field is a member of a structure whose size is set in bits.
+ * This is useful for packing data to save memory. Use 'unsigned int' for portability.
+ */
+struct DeviceStatus {
+    unsigned int is_active : 1; // Can be 0 or 1 (1 bit)
+    unsigned int error_code : 4; // Can hold values 0-15 (4 bits)
+    unsigned int protocol_ver : 3; // Can hold values 0-7 (3 bits)
+};
+/* For comparison, a regular structure holding the same conceptual data. */
+struct RegularStatus {
+    unsigned int is_active;
+    unsigned int error_code;
+    unsigned int protocol_ver;
+};
+
 
 // MAIN
 
@@ -295,6 +312,7 @@ int main(int argc, char* argv[])
     //demoStructurePtrs();
     //demoEnumerations();
     //demoUnion();
+    demoBitFields();
 
     //demoStaticMemory();
     //demoDynamicMemory();
@@ -2636,5 +2654,54 @@ void demoUnion(void)
     }
     printf("\n");
     printf("  This allows us to analyze the internal representation of data.\n");
+}
+
+
+/*
+ * Demonstrates the definition and usage of bit-fields in structures.
+ */
+void demoBitFields(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    struct DeviceStatus status;
+
+    printf("\n--- DEMO: Bit-Fields ---\n");
+
+    /* --- 1. Size of a Bit-Field Structure --- */
+    printf("\nSection: Memory Savings\n");
+    printf("  A bit-field allows the compiler to pack members tightly.\n");
+    printf("  Size of regular structure: %zu bytes\n", sizeof(struct RegularStatus));
+    printf("  Size of bit-field structure: %zu bytes\n", sizeof(struct DeviceStatus));
+    printf("  The bit-field structure is significantly smaller.\n");
+
+    /* --- 2. Using Bit-Fields --- */
+    printf("\nSection: Assigning and Accessing Values\n");
+    printf("  You can assign and access bit-field members like regular struct members.\n");
+
+    status.is_active = 1;
+    status.error_code = 5;   // 5 in binary is 0101 (fits in 4 bits)
+    status.protocol_ver = 3; // 3 in binary is 011 (fits in 3 bits)
+
+    printf("  Current status:\n");
+    printf("    - Active: %u\n", status.is_active);
+    printf("    - Error Code: %u\n", status.error_code);
+    printf("    - Protocol Version: %u\n", status.protocol_ver);
+
+    /* --- 3. Bit-Field Overflow --- */
+    printf("\nSection: Bit-Field Overflow\n");
+    printf("  A bit-field can only hold values that fit within its specified bit width.\n");
+    printf("  The 'error_code' field has 4 bits, so its max value is 15 (binary 1111).\n");
+
+    printf("  Assigning status.error_code = 18...\n");
+    // 18 in binary is 10010. This requires 5 bits.
+    status.error_code = 18;
+
+    /*
+     * When 10010 is assigned to a 4-bit field, the most significant bit is truncated.
+     * The value stored becomes 0010, which is 2 in decimal.
+     * The exact behavior can be compiler-dependent, but truncation is typical.
+     */
+    printf("  After overflow, the stored value is: %u (not 18!)\n", status.error_code);
+    printf("  This is because the value was truncated to fit into 4 bits.\n");
 }
 
