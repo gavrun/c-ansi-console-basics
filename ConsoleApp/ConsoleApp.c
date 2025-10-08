@@ -25,6 +25,11 @@
 
 
 // Functions declarations (prototype)
+/*
+ * A function prototype tells the compiler about a function's name, return type,
+ * and parameters before the function is actually defined. This allows you to
+ * call a function before its definition appears in the code.
+ */
 void demoConsoleInOut(void);
 void demoVariablesAndTypes(void);
 void demoTypesCast(void);
@@ -32,6 +37,13 @@ void demoOperators(void);
 void demoPointers(void);
 void demoConstantPtr(void);
 void demoControlFlowStructures(void);
+void demoFunctions(void);
+int addNumbers(int a, int b);
+void passByValueExample(int num);
+void passByReferenceExample(int* num_ptr);
+void printWithConstParam(const int value);
+long factorial(int n);
+
 
 
 // Types and structures definitions
@@ -62,7 +74,8 @@ int main()
     //demoOperators();
     //demoPointers();
     //demoConstantPtr();
-    demoControlFlowStructures();
+    //demoControlFlowStructures();
+    demoFunctions();
 
 
     return 0;
@@ -73,6 +86,13 @@ int main()
 
 
 // Function definitions (implementation)
+/*
+ * Function Definition is the full implementation of the function
+ * int addNumbers(int a, int b)
+ * 'int' is the return type
+ * 'a' and 'b' are the parameters
+ * 'return' statement sends a value back to the caller
+ */
 
 
 /*
@@ -735,6 +755,116 @@ void demoControlFlowStructures(void)
     }
     printf("\n");
 }
+
+
+/*
+ * Demonstrates function definition, calling, parameters, and return values.
+ */
+void demoFunctions(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    int sum;
+    int original_value;
+    long fact_result;
+
+    printf("\n--- DEMO: Functions in C ---\n");
+
+    /* --- Function Call and Return Result --- */
+    printf("\nSection: Function Call and Return Value\n");
+    /*
+     * Here, we 'call' the addNumbers function.
+     * The values 5 and 3 are 'arguments' passed to the function.
+     * The function 'returns' a value which is stored in the 'sum' variable.
+     */
+    sum = addNumbers(5, 3);
+    printf("  The result of addNumbers(5, 3) is: %d\n", sum);
+
+    /* --- Pass By Value --- */
+    printf("\nSection: Pass By Value\n");
+    original_value = 10;
+    printf("  Before calling passByValueExample, original_value = %d\n", original_value);
+    passByValueExample(original_value); /* A copy of original_value is passed */
+    printf("  After calling passByValueExample, original_value is still = %d\n", original_value);
+    printf("  Conclusion: The function could not change the original variable.\n");
+
+    /* --- Pointers as Parameters (Pass By Reference) --- */
+    printf("\nSection: Pointers as Parameters (Pass By Reference)\n");
+    original_value = 20;
+    printf("  Before calling passByReferenceExample, original_value = %d\n", original_value);
+    passByReferenceExample(&original_value); /* The memory address is passed */
+    printf("  After calling passByReferenceExample, original_value is now = %d\n", original_value);
+    printf("  Conclusion: By passing a pointer, the function can change the original variable.\n");
+
+    /* --- Constant Parameters --- */
+    printf("\nSection: Constant Parameters\n");
+    printf("  Using 'const' for a parameter tells the compiler the function should not modify it.\n");
+    printWithConstParam(99);
+    printf("  This is a contract that improves code safety and readability.\n");
+
+    /* --- Recursive Functions --- */
+    printf("\nSection: Recursive Functions\n");
+    /* A recursive function is one that calls itself to solve a problem. */
+    fact_result = factorial(5);
+    printf("  The result of factorial(5) is: %ld\n", fact_result);
+    printf("  (Calculation: 5 * 4 * 3 * 2 * 1)\n");
+}
+
+
+/*
+ * This is a simple implementation of a function.
+ */
+int addNumbers(int a, int b)
+{
+    return a + b;
+}
+
+/*
+ * This function receives a copy of the argument.
+ * Any changes to 'num' here only affect the local copy.
+ */
+void passByValueExample(int num)
+{
+    num = 100; /* This only changes the copy inside this function */
+    printf("    -> Inside function, the local copy 'num' is changed to %d\n", num);
+}
+
+/*
+ * This function receives a pointer (a memory address).
+ * By dereferencing the pointer, it can modify the original variable.
+ */
+void passByReferenceExample(int* num_ptr)
+{
+    *num_ptr = 200; /* This changes the value at the original memory address */
+    printf("    -> Inside function, the value at the address is changed to %d\n", *num_ptr);
+}
+
+/*
+ * The 'const' keyword ensures that 'value' cannot be changed inside this function.
+ * For example, the line 'value = 0;' would cause a compiler error.
+ */
+void printWithConstParam(const int value)
+{
+    printf("  The constant value received by the function is: %d\n", value);
+}
+
+/*
+ * Calculates the factorial of a number using recursion.
+ * The function calls itself with a smaller value until it reaches the base case.
+ */
+long factorial(int n)
+{
+    /* Base case: The condition that stops the recursion */
+    if (n <= 1)
+    {
+        return 1;
+    }
+    /* Recursive step: The function calls itself */
+    else
+    {
+        return n * factorial(n - 1);
+    }
+}
+
 
 
 
