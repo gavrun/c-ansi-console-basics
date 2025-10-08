@@ -24,6 +24,22 @@
 #include <stddef.h> // Required for NULL 
 
 
+/* File Scope (Global) Variables */
+/*
+ * This variable is declared outside of any function.
+ * It is accessible from any function within this file.
+ * It can also be accessed by other files using the 'extern' keyword.
+ */
+int global_variable = 100;
+
+/*
+ * A static global variable is also declared at file scope, but its visibility
+ * is restricted to ONLY this file. It cannot be accessed from other files.
+ */
+static int file_static_variable = 200;
+
+
+
 // Functions declarations (prototype)
 /*
  * A function prototype tells the compiler about a function's name, return type,
@@ -50,6 +66,8 @@ int subtract(int a, int b);
 void performCalculation(int x, int y, int (*calculator_func)(int, int));
 /* A function that returns a function pointer */
 int (*getOperation(char op_char))(int, int);
+void demoScopes(void);
+void static_counter_function(void);
 
 
 
@@ -83,7 +101,10 @@ int main()
     //demoConstantPtr();
     //demoControlFlowStructures();
     //demoFunctions();
-    demoFunctionPtr();
+    //demoFunctionPtr();
+    demoScopes();
+    printf("\nAfter demoScopes finished, global_variable is now: %d\n", global_variable);
+
 
 
     return 0;
@@ -988,7 +1009,90 @@ int (*getOperation(char op_char))(int, int)
 }
 
 
+/*
+ * Demonstrates different variable scopes in C.
+ */
+void demoScopes(void)
+{
+    /* --- Block Scope (Local) Variable --- */
+    /*
+     * This variable is declared inside a function block.
+     * It only exists and is only accessible within this function.
+     */
+    int local_variable = 10;
 
+    printf("\n--- DEMO: Variable Scopes ---\n");
+
+    printf("\nSection: Block Scope (Local) vs. File Scope (Global)\n");
+    printf("  Inside demoScopes, 'local_variable' = %d\n", local_variable);
+    printf("  Inside demoScopes, 'global_variable' = %d\n", global_variable);
+    printf("  Inside demoScopes, 'file_static_variable' = %d\n", file_static_variable);
+
+    /* We can modify the global variable from within a function */
+    global_variable = 101;
+    printf("  Modified 'global_variable' to: %d\n", global_variable);
+
+    /* --- Inner Block Scope and Shadowing --- */
+    printf("\nSection: Inner Block Scope and Shadowing\n");
+    {
+        /*
+         * This is a NEW variable that only exists inside these curly braces.
+         * It "shadows" the outer local_variable, meaning that within this block,
+         * the name 'local_variable' refers to this new variable.
+         */
+        int local_variable = 20;
+        int inner_block_var = 30;
+        printf("    -> Inside inner block, a new 'local_variable' = %d (shadowing)\n", local_variable);
+        printf("    -> Inside inner block, 'inner_block_var' = %d\n", inner_block_var);
+    }
+    /* The variable 'inner_block_var' no longer exists here. */
+    /* The shadowed 'local_variable' is gone, and the original is visible again. */
+    printf("  Outside inner block, original 'local_variable' = %d\n", local_variable);
+
+    /* --- Static Local Variables --- */
+    printf("\nSection: Static Local Variables\n");
+    printf("  A static local variable is initialized only once and retains its value\n");
+    printf("  between function calls, but is only visible inside its function.\n");
+    static_counter_function();
+    static_counter_function();
+    static_counter_function();
+
+    /* --- External Objects ('extern') --- */
+    printf("\nSection: External Objects ('extern')\n");
+    printf("  The 'extern' keyword is a promise to the compiler that a global\n");
+    printf("  variable exists, but is defined in another source file.\n");
+
+    /*
+     * This line DECLARES another_global_var, but does not DEFINE it (allocate memory).
+     * It tells the compiler to trust that the linker will find it in another file.
+     */
+    extern int another_global_var;
+
+    /*
+     * If you were to uncomment the line below and compile this single file,
+     * you would get a LINKER ERROR because 'another_global_var' is never defined.
+     * To make it work, you would need another .c file with 'int another_global_var = 500;'
+     * at the global scope.
+     */
+     /* printf("  Value from another file: %d\n", another_global_var); */
+    printf("  Using an unresolved 'extern' variable would cause a LINKER ERROR.\n");
+}
+
+
+/*
+ * This function demonstrates a static local variable.
+ */
+void static_counter_function(void)
+{
+    /*
+     * 'static_counter' is created and initialized to 0 only the first time
+     * this function is called. On subsequent calls, the variable persists
+     * and retains its previous value.
+     */
+    static int static_counter = 0;
+    static_counter++;
+    printf("    -> Counter function call. 'static_counter' is now: %d\n", static_counter);
+}
 
 
 
