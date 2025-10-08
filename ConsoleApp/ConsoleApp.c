@@ -53,6 +53,9 @@
 //#define APP_VERSION 1
 #define APP_VERSION 2
 
+// Number of elements to write to binary files
+#define NUM_ITEMS 3
+
 
 // File Scope (Global) Variables
 /*
@@ -141,6 +144,9 @@ void static_lifetime_function(void);
 int function_call_example(int param1, int param2);
 void demoDynamicMemory(void);
 void demoPreprocessor(void);
+void demoFile(void);
+void demoFileInOut(void);
+void demoBinInOut(void);
 
 
 // Types and structures definitions
@@ -193,6 +199,16 @@ enum Medal {
     GOLD = 20
 };
 
+/*
+ * Defines a structure we'll be writing and reading.
+ * This is a typical example of using binary files.
+ */
+struct InventoryItem {
+    int id;
+    double price;
+    char name[50];
+};
+
 
 // MAIN
 
@@ -229,9 +245,11 @@ int main(int argc, char* argv[])
     //demoVariablesAndTypes();
     //demoTypesCast();
     //demoOperators();
+    
     //demoPointers();
     //demoConstantPtr();
     //demoControlFlowStructures();
+    
     //demoFunctions();
     //demoFunctionPtr();
     
@@ -255,13 +273,18 @@ int main(int argc, char* argv[])
 
     //demoDateTime();
     //demoMath();
+    
     //demoStructures();
     //demoStructurePtrs();
     //demoEnumerations();
 
     //demoStaticMemory();
     //demoDynamicMemory();
-    demoPreprocessor();
+    //demoPreprocessor();
+
+    //demoFileOperations();
+    //demoFileInOut();
+    //demoBinInOut();
 
 
     return 0;
@@ -2181,5 +2204,355 @@ void demoPreprocessor(void)
     printf("  - This is line number: %d\n", __LINE__);
     printf("  - This code was compiled on: %s\n", __DATE__);
     printf("  - This code was compiled at: %s\n", __TIME__);
+}
+
+
+/*
+ * Demonstrates basic file input and output operations.
+ */
+void demoFile(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    FILE* file_ptr; /* A FILE pointer is used to work with files */
+
+    char* filename = "demo.txt";
+    char buffer[256];
+
+    printf("\n--- DEMO: File I/O ---\n");
+
+    /* --- 1. Writing to a File ("w" mode) --- */
+    printf("\nSection: Writing to a file ('w' mode)\n");
+    /*
+     * fopen() opens a file.
+     * "w" stands for "write" mode.
+     * If the file doesn't exist, it will be created in a project folder.
+     * If the file DOES exist, its contents will be ERASED before writing.
+     */
+    file_ptr = fopen(filename, "w");
+
+    /* CRITICAL: Always check if the file pointer is NULL. */
+    if (file_ptr == NULL)
+    {
+        printf("  Error: Could not open '%s' for writing.\n", filename);
+    }
+    else
+    {
+        printf("  File '%s' opened successfully for writing.\n", filename);
+
+        /* Write to the file using functions similar to console I/O */
+        fprintf(file_ptr, "Hello, World!\n");
+        fputs("This is line 2.\n", file_ptr);
+        fputc('A', file_ptr); /* Write a single character */
+        fputc('\n', file_ptr);
+
+        /* CRITICAL: Always close the file when you are done. */
+        /* This flushes any buffered data to the disk and releases the file handle. */
+        fclose(file_ptr);
+        printf("  Data written and file closed.\n");
+    }
+
+    /* --- 2. Reading from a File ("r" mode) --- */
+    printf("\nSection: Reading from a file ('r' mode)\n");
+    /*
+     * "r" stands for "read" mode.
+     * The file must exist, or fopen() will return NULL.
+     */
+    file_ptr = fopen(filename, "r");
+    if (file_ptr == NULL)
+    {
+        printf("  Error: Could not open '%s' for reading.\n", filename);
+    }
+    else
+    {
+        printf("  File '%s' opened successfully for reading.\n", filename);
+        printf("  --- File Content ---\n");
+
+        /*
+         * Read the file line by line using fgets().
+         * fgets() reads up to (size-1) characters, or until a newline, or until EOF.
+         * It returns NULL when it reaches the end of the file.
+         */
+        while (fgets(buffer, sizeof(buffer), file_ptr) != NULL)
+        {
+            /* Print the buffer that was just read */
+            printf("    %s", buffer);
+        }
+
+        printf("  --- End of File ---\n");
+        fclose(file_ptr);
+        printf("  File closed.\n");
+    }
+
+    /* --- 3. Appending to a File ("a" mode) --- */
+    printf("\nSection: Appending to a file ('a' mode)\n");
+    /*
+     * "a" stands for "append" mode.
+     * If the file doesn't exist, it will be created.
+     * If it does exist, the file pointer is positioned at the VERY END.
+     * Existing data is NOT erased.
+     */
+    file_ptr = fopen(filename, "a");
+    if (file_ptr == NULL)
+    {
+        printf("  Error: Could not open '%s' for appending.\n", filename);
+    }
+    else
+    {
+        printf("  File '%s' opened successfully for appending.\n", filename);
+        fputs("This line was appended.\n", file_ptr);
+        fclose(file_ptr);
+        printf("  Data appended and file closed.\n");
+    }
+
+    /* --- 4. Reading the file again to see the appended content --- */
+    printf("\nSection: Reading the file again\n");
+    file_ptr = fopen(filename, "r");
+    if (file_ptr == NULL)
+    {
+        printf("  Error: Could not open '%s' for reading.\n", filename);
+    }
+    else
+    {
+        printf("  --- Final File Content ---\n");
+        while (fgets(buffer, sizeof(buffer), file_ptr) != NULL)
+        {
+            printf("    %s", buffer);
+        }
+        printf("  --- End of File ---\n");
+        fclose(file_ptr);
+    }
+}
+
+
+/*
+ * Demonstrates advanced file input and output operations.
+ */
+void demoFileInOut(void)
+{
+    /* C89 requires all variables to be declared at the beginning of a block */
+    FILE* file_ptr;
+    char* filename = "demo_io.txt";
+    char buffer[256];
+    long current_pos;
+    int ch;
+
+    printf("\n--- DEMO: Advanced File I/O ---\n");
+
+    /* --- 1. Writing to a file and Buffering --- */
+    printf("\nSection: Writing to a file ('w') and Buffering\n");
+
+    // fopen() opens a file. "w" means write mode.
+    // If the file already exists, its contents will be ERASED.
+    file_ptr = fopen(filename, "w");
+
+    // CRITICALLY IMPORTANT: Always check if fopen() returned NULL.
+    // This means the file could not be opened (e.g., due to permission issues).
+    if (file_ptr == NULL)
+    {
+        printf("  Error: failed to open file '%s' for writing.\n", filename);
+    }
+    else
+    {
+        printf("  File '%s' successfully opened for writing.\n", filename);
+
+        fprintf(file_ptr, "Line 1: The quick brown fox.\n");
+        fprintf(file_ptr, "Line 2: Jumps over the lazy dog.\n");
+
+        printf("  Two lines have been written to the file.\n");
+        printf("  The data might still be in the buffer and not yet on disk.\n");
+
+        // Buffering: Standard I/O in C is buffered for performance.
+        // Data is not written to disk immediately but when the buffer fills.
+        // fflush() forces the buffer to be flushed to disk.
+        fflush(file_ptr);
+        printf("  fflush() called. Data is now guaranteed to be on disk.\n");
+
+        // CRITICALLY IMPORTANT: Always close the file when done.
+        // fclose() also flushes the buffer before closing.
+        fclose(file_ptr);
+        printf("  File closed.\n");
+    }
+
+    /* --- 2. Reading, checking End of File (EOF) and errors --- */
+    printf("\nSection: Reading ('r'), checking EOF and errors\n");
+
+    file_ptr = fopen(filename, "r");
+    if (file_ptr == NULL)
+    {
+        printf("  Error: failed to open file '%s' for reading.\n", filename);
+    }
+    else
+    {
+        printf("  File '%s' opened for reading.\n", filename);
+        printf("  --- File contents ---\n");
+
+        // Read the file line by line until fgets() returns NULL
+        while (fgets(buffer, sizeof(buffer), file_ptr) != NULL)
+        {
+            printf("    %s", buffer);
+        }
+        printf("  --- End of reading ---\n");
+
+        // After finishing the loop, check WHY it ended.
+        // feof() returns a nonzero value if the end of the file has been reached.
+        if (feof(file_ptr))
+        {
+            printf("  feof() check: end of file (EOF) reached.\n");
+        }
+
+        // ferror() returns a nonzero value if a read/write error occurred.
+        if (ferror(file_ptr))
+        {
+            printf("  ferror() check: an error occurred while reading the file.\n");
+        }
+
+        fclose(file_ptr);
+        printf("  File closed.\n");
+    }
+
+    /* --- 3. File positioning --- */
+    printf("\nSection: File positioning (fseek, ftell, rewind)\n");
+
+    file_ptr = fopen(filename, "r");
+    if (file_ptr == NULL)
+    {
+        printf("  Error: failed to open file '%s' for reading.\n", filename);
+    }
+    else
+    {
+        // ftell() returns the current position of the file pointer.
+        current_pos = ftell(file_ptr);
+        printf("  Initial file pointer position: %ld\n", current_pos);
+
+        // fseek() moves the file pointer.
+        // SEEK_SET - offset from the beginning of the file.
+        fseek(file_ptr, 8, SEEK_SET);
+        current_pos = ftell(file_ptr);
+        ch = fgetc(file_ptr); // Read one character
+        printf("  After fseek(..., 8, SEEK_SET), position: %ld, character: '%c'\n", current_pos, ch);
+
+        // rewind() is a simple way to return to the beginning of the file.
+        // Equivalent to fseek(file_ptr, 0, SEEK_SET).
+        rewind(file_ptr);
+        current_pos = ftell(file_ptr);
+        printf("  After rewind(), position: %ld\n", current_pos);
+
+        // SEEK_END - offset from the end of the file.
+        // fseek(..., 0, SEEK_END) moves the pointer to the very end.
+        fseek(file_ptr, 0, SEEK_END);
+        current_pos = ftell(file_ptr);
+        printf("  After fseek(..., 0, SEEK_END), position: %ld (this is the file size)\n", current_pos);
+
+        fclose(file_ptr);
+        printf("  File closed.\n");
+    }
+}
+
+
+/*
+ * Demonstrates binary file input and output.
+ */
+void demoBinInOut(void)
+{
+    FILE* file_ptr;
+    char* filename = "demo_io.bin"; // Binary files often use extensions like .bin or .dat
+
+    // 1. Create data to write
+    struct InventoryItem items_to_write[NUM_ITEMS];
+    struct InventoryItem items_to_read[NUM_ITEMS];
+    size_t items_processed;
+    int i;
+
+    // Fill the source array with data
+    items_to_write[0].id = 101;
+    items_to_write[0].price = 15.50;
+    strcpy(items_to_write[0].name, "Health Potion");
+
+    items_to_write[1].id = 205;
+    items_to_write[1].price = 250.0;
+    strcpy(items_to_write[1].name, "Magic Sword");
+
+    items_to_write[2].id = 310;
+    items_to_write[2].price = 75.25;
+    strcpy(items_to_write[2].name, "Leather Armor");
+
+    printf("\n--- DEMO: Binary File I/O ---\n");
+
+    /* --- 1. Writing to a binary file ("wb" mode) --- */
+    printf("\nSection: Writing to a binary file ('wb' mode)\n");
+
+    // "wb" means "write binary".
+    // Unlike text mode, binary mode does not perform character translations
+    // (for example, \n to \r\n on Windows).
+    file_ptr = fopen(filename, "wb");
+
+    if (file_ptr == NULL)
+    {
+        printf("  Error: failed to open '%s' for binary writing.\n", filename);
+    }
+    else
+    {
+        printf("  File '%s' opened for binary writing.\n", filename);
+
+        // fwrite() writes raw bytes from memory directly into a file.
+        // Arguments: (data pointer, size of one element, number of elements, file pointer)
+        items_processed = fwrite(items_to_write, sizeof(struct InventoryItem), NUM_ITEMS, file_ptr);
+
+        // It’s important to check how many elements were actually written.
+        if (items_processed != NUM_ITEMS)
+        {
+            printf("  Error: only %zu of %d items were written.\n", items_processed, NUM_ITEMS);
+        }
+        else
+        {
+            printf("  Successfully written %zu items to the file.\n", items_processed);
+        }
+
+        fclose(file_ptr);
+        printf("  File closed.\n");
+    }
+
+    /* --- 2. Reading from a binary file ("rb" mode) --- */
+    printf("\nSection: Reading from a binary file ('rb' mode)\n");
+
+    // "rb" means "read binary".
+    file_ptr = fopen(filename, "rb");
+    if (file_ptr == NULL)
+    {
+        printf("  Error: failed to open '%s' for binary reading.\n", filename);
+    }
+    else
+    {
+        printf("  File '%s' opened for binary reading.\n", filename);
+
+        // fread() reads raw bytes from the file directly into memory (our structure).
+        // The arguments and order are the same as in fwrite().
+        items_processed = fread(items_to_read, sizeof(struct InventoryItem), NUM_ITEMS, file_ptr);
+
+        if (items_processed != NUM_ITEMS)
+        {
+            printf("  Error: only %zu of %d items were read.\n", items_processed, NUM_ITEMS);
+        }
+        else
+        {
+            printf("  Successfully read %zu items from the file.\n", items_processed);
+        }
+
+        fclose(file_ptr);
+        printf("  File closed.\n");
+    }
+
+    /* --- 3. Verifying the read data --- */
+    printf("\nSection: Verifying read data\n");
+    printf("  Comparing the data we wrote with what we read back:\n");
+
+    for (i = 0; i < NUM_ITEMS; i++)
+    {
+        printf("  --- Item %d ---\n", i + 1);
+        printf("    ID: %d\n", items_to_read[i].id);
+        printf("    Name: %s\n", items_to_read[i].name);
+        printf("    Price: %.2f\n", items_to_read[i].price);
+    }
+    printf("  Data successfully restored from file.\n");
 }
 
