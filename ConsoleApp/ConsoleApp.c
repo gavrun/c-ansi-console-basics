@@ -247,11 +247,20 @@ struct RegularStatus {
 // MAIN
 
 /*
+ * The 'main' function basic signature (legacy C89) with an unspecified number of parameters 
+ * (not necessarily zero parameters).
+ * 
  * int main()
+ * 
+ * It is recommended to explicitly state that 'main' function takes no arguments:
+ * 
+ * int main(void)
+ * 
+ * This clearly tells the compiler that 'main' accepts no parameters.
  */
 
  /*
-  * The 'main' function signature is changed to accept command-line parameters.
+  * The 'main' function signature is changed to accept command-line arguments.
   * 
   * int main(int argc, char* argv[])
   *
@@ -271,7 +280,7 @@ int main(int argc, char* argv[])
 
     printf("Hello World!\n");
 
-    printf("\nUncomment a demo function if you don't see anything.\n");
+    printf("\nUncomment a demo function and interact with code to learn C language.\n");
 
     // Uncomment a demo function
     
@@ -294,8 +303,8 @@ int main(int argc, char* argv[])
     //demoArrays();
     //demoStrings();
     
-    printf("\nProgram started with %d arguments\n", argc);
-    if (argc > 1) {
+    printf("\nProgram started with %d arguments\n", argc); // argc > 1
+    if (argc >= 1) {
         printf("Command line arguments:\n");
         int i;
         for (i = 0; i < argc; i++) {
@@ -312,7 +321,7 @@ int main(int argc, char* argv[])
     //demoStructurePtrs();
     //demoEnumerations();
     //demoUnion();
-    demoBitFields();
+    //demoBitFields();
 
     //demoStaticMemory();
     //demoDynamicMemory();
