@@ -44,6 +44,22 @@ int global_variable = 100;
 static int file_static_variable = 200;
 
 
+// Variables in Static Memory (Data and BSS Segments)
+/*
+ * This is an initialized global variable. Its value (10) is stored in the
+ * executable file itself and loaded into the "Data Segment" when the program starts.
+ * It exists for the entire duration of the program.
+ */
+int initialized_global = 10;
+
+/*
+ * This is an uninitialized global variable. The compiler places it in a special
+ * block called the "BSS Segment". The operating system initializes this entire
+ * block to zero when the program is loaded. It also exists for the program's lifetime.
+ */
+int uninitialized_global;
+
+
 // Functions declarations (prototype)
 /*
  * A function prototype tells the compiler about a function's name, return type,
@@ -95,6 +111,9 @@ void demoStructurePtrs(void);
 void updateItem(struct Item* item_ptr);
 void demoEnumerations(void);
 void printGameState(enum GameState state);
+void demoStaticMemory(void);
+void static_lifetime_function(void);
+int function_call_example(int param1, int param2);
 
 
 // Types and structures definitions
@@ -215,7 +234,9 @@ int main(int argc, char* argv[])
     //demoMath();
     //demoStructures();
     //demoStructurePtrs();
-    demoEnumerations();
+    //demoEnumerations();
+
+    demoStaticMemory();
 
 
     return 0;
@@ -1882,6 +1903,83 @@ void printGameState(enum GameState state)
 }
 
 
+/*
+ * Demonstrates the concepts of static memory layout in a C program.
+ */
+void demoStaticMemory(void)
+{
+    /* This is a local variable. It is stored on the Stack. */
+    int local_variable = 100;
 
+    printf("\n--- DEMO: Static Memory Layout ---\n");
+
+    /* --- 1. Code (Text Segment) --- */
+    printf("\nSection: Code (Text Segment)\n");
+    printf("  The machine code instructions for all functions (like main, demoStaticMemory)\n");
+    printf("  are loaded into a read-only memory area called the Text Segment.\n");
+
+    /* --- 2. Data and BSS Segments --- */
+    printf("\nSection: Data and BSS Segments (for global/static variables)\n");
+    printf("  These segments hold variables that exist for the program's entire lifetime.\n");
+    printf("  Value of 'initialized_global' (from Data Segment): %d\n", initialized_global);
+    printf("  Value of 'uninitialized_global' (from BSS Segment): %d\n", uninitialized_global);
+
+    printf("\n  A 'static' local variable also lives here, retaining its value:\n");
+    static_lifetime_function();
+    static_lifetime_function();
+    static_lifetime_function();
+
+    /* --- 3. Stack --- */
+    printf("\nSection: The Stack (for local variables and function calls)\n");
+    printf("  The Stack is a dynamic region of memory that grows and shrinks.\n");
+    printf("  The variable 'local_variable' with value %d was just created on the stack.\n", local_variable);
+    printf("  It will be automatically destroyed when this function ends.\n");
+
+    /* --- 4. Relationship between Code and Memory (Function Call) --- */
+    printf("\nSection: A Function Call in Action (Code -> Stack)\n");
+    printf("  Let's trace the call to 'function_call_example(100, 200)':\n");
+    printf("  1. The code from the Text Segment prepares to call the function.\n");
+    printf("  2. A new 'stack frame' is pushed onto the Stack for the new function.\n");
+    printf("  3. Arguments (100, 200) and the return address are placed on the stack frame.\n");
+
+    int result = function_call_example(local_variable, 200);
+
+    printf("  7. The function has returned control here. Its stack frame is gone.\n");
+    printf("  8. The return value (%d) was passed back, often via a CPU register.\n", result);
+    printf("  9. 'local_variable' (%d) is still accessible because its frame is still on the stack.\n", local_variable);
+}
+
+
+/*
+ * This function demonstrates a static local variable.
+ */
+void static_lifetime_function(void)
+{
+    /*
+     * This variable is initialized to 0 only ONCE. Its memory is allocated in the
+     * Data or BSS segment, not the stack, so it persists across calls.
+     */
+    static int static_counter = 0;
+    static_counter++;
+    printf("    -> static_lifetime_function call. Counter is now: %d\n", static_counter);
+}
+
+
+/*
+ * This function helps demonstrate the stack.
+ */
+int function_call_example(int param1, int param2)
+{
+    /* These parameters and this local variable exist on this function's stack frame. */
+    int local_sum;
+
+    printf("    -> 4. Now inside 'function_call_example'.\n");
+    printf("    -> 5. Its parameters (%d, %d) and local variables exist on its stack frame.\n", param1, param2);
+
+    local_sum = param1 + param2;
+
+    printf("    -> 6. Returning the sum (%d). This stack frame will now be destroyed.\n", local_sum);
+    return local_sum;
+}
 
 
