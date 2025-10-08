@@ -90,6 +90,9 @@ void demoMainCmdParams(int argc, char* argv[]);
 void demoDateTime(void);
 void demoMath(void);
 void demoStructures(void);
+void demoStructurePtrs(void);
+/* This function takes a pointer to a struct Item as a parameter */
+void updateItem(struct Item* item_ptr);
 
 
 // Types and structures definitions
@@ -111,6 +114,12 @@ struct Player {
     char name[50];
     int level;
     struct Point position; /* Nested structure */
+};
+
+struct Item {
+    char name[50];
+    int quantity;
+    double price;
 };
 
 
@@ -179,7 +188,8 @@ int main(int argc, char* argv[])
 
     //demoDateTime();
     //demoMath();
-    demoStructures();
+    //demoStructures();
+    demoStructurePtrs();
 
 
     return 0;
@@ -1693,7 +1703,78 @@ void demoStructures(void)
 }
 
 
+/*
+ * Demonstrates declaring and using pointers to structures.
+ */
+void demoStructurePtrs(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    struct Item my_item = { "Magic Sword", 1, 500.0 };
 
+    /* Declare a pointer to a structure of type Item */
+    struct Item* ptr_to_item;
+
+    printf("\n--- DEMO: Pointers to Structures ---\n");
+
+    /* Assign the memory address of 'my_item' to the pointer */
+    ptr_to_item = &my_item;
+    printf("  A pointer 'ptr_to_item' now holds the address of 'my_item'.\n");
+
+    /* --- Accessing Members via Pointer (Method 1: Dereference and Dot) --- */
+    printf("\nSection: Accessing with (*ptr).member Syntax\n");
+    /*
+     * The parentheses are required because the dot operator (.) has higher
+     * precedence than the dereference operator (*).
+     * This syntax is valid but rarely used.
+     */
+    printf("  Item Name: %s\n", (*ptr_to_item).name);
+    printf("  Item Quantity: %d\n", (*ptr_to_item).quantity);
+
+    /* --- Accessing Members via Pointer (Method 2: Arrow Operator) --- */
+    printf("\nSection: Accessing with -> (Arrow) Operator\n");
+    /*
+     * The arrow operator (->) is a convenient shorthand for the above.
+     * It automatically dereferences the pointer and accesses the member.
+     * This is the standard and preferred way to access members via a pointer.
+     */
+    printf("  Item Name: %s\n", ptr_to_item->name);
+    printf("  Item Price: %.2f\n", ptr_to_item->price);
+
+    /* --- Passing a Structure Pointer to a Function --- */
+    printf("\nSection: Passing a Pointer to a Function\n");
+    printf("  Passing a pointer is efficient; it avoids copying the whole structure.\n");
+    printf("  It also allows the function to modify the original data.\n\n");
+
+    printf("  Item state BEFORE calling updateItem():\n");
+    printf("    Name: %s, Quantity: %d, Price: %.2f\n",
+        my_item.name, my_item.quantity, my_item.price);
+
+    /* Call the function, passing the address of our structure */
+    updateItem(&my_item);
+
+    printf("\n  Item state AFTER calling updateItem():\n");
+    printf("    Name: %s, Quantity: %d, Price: %.2f\n",
+        my_item.name, my_item.quantity, my_item.price);
+    printf("  The original structure has been modified by the function.\n");
+}
+
+
+/*
+ * This function receives a pointer to a struct Item.
+ * It can directly modify the members of the original structure variable
+ * that was passed by reference.
+ */
+void updateItem(struct Item* item_ptr)
+{
+    printf("    -> Inside updateItem() function.\n");
+
+    /* Modify the data using the arrow operator */
+    strcpy(item_ptr->name, "Enchanted Shield");
+    item_ptr->quantity += 1;
+    item_ptr->price = 450.50;
+
+    printf("    -> The item has been updated.\n");
+}
 
 
 
