@@ -22,11 +22,12 @@
 
 #include <stdbool.h> // C99 introduced <stdbool.h> for bool, true, false. In C89, we use _Bool or integers.
 #include <stddef.h>  // Required for NULL 
-#include <string.h>  // For string manipulation functions like strcpy, strlen
-#include <stdlib.h>  // For string conversion functions like atoi, atof 
+#include <string.h>  // For string manipulation functions like strcpy, strlen, memcpy
+#include <stdlib.h>  // For string conversion functions like atoi, atof, malloc, calloc, realloc, free
 #include <ctype.h>   // For character type functions like isdigit, isalpha 
 #include <time.h>    // For all date and time functions 
 #include <math.h>    // For all math functions 
+
 
 
 // File Scope (Global) Variables
@@ -114,6 +115,7 @@ void printGameState(enum GameState state);
 void demoStaticMemory(void);
 void static_lifetime_function(void);
 int function_call_example(int param1, int param2);
+void demoDynamicMemory(void);
 
 
 // Types and structures definitions
@@ -236,7 +238,8 @@ int main(int argc, char* argv[])
     //demoStructurePtrs();
     //demoEnumerations();
 
-    demoStaticMemory();
+    //demoStaticMemory();
+    demoDynamicMemory();
 
 
     return 0;
@@ -1980,6 +1983,122 @@ int function_call_example(int param1, int param2)
 
     printf("    -> 6. Returning the sum (%d). This stack frame will now be destroyed.\n", local_sum);
     return local_sum;
+}
+
+
+/*
+ * Demonstrates dynamic memory allocation and management.
+ */
+void demoDynamicMemory(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    int* single_int_ptr;
+    int* array_ptr;
+    int* realloc_ptr;
+    int i;
+
+    printf("\n--- DEMO: Dynamic Memory (The Heap) ---\n");
+    printf("  The Heap is a large pool of memory available to the programmer.\n");
+    printf("  Unlike the Stack, memory allocated here persists until explicitly freed.\n");
+    printf("  This is essential for data whose size is unknown at compile time.\n");
+
+    /* --- 1. malloc (Memory Allocation) --- */
+    printf("\nSection: malloc - Allocating raw memory\n");
+    /*
+     * malloc allocates a requested number of bytes. It returns a void pointer
+     * to the start of the block, which we cast to the desired type.
+     */
+    single_int_ptr = (int*)malloc(sizeof(int));
+
+    /*
+     * CRITICAL: Always check if malloc returned NULL. This happens if the
+     * system is out of memory.
+     */
+    if (single_int_ptr == NULL)
+    {
+        printf("  ERROR: Memory allocation failed!\n");
+    }
+    else
+    {
+        printf("  Memory for one integer was successfully allocated on the Heap.\n");
+        /* Now we can use this memory */
+        *single_int_ptr = 123;
+        printf("  Value stored at the allocated address: %d\n", *single_int_ptr);
+
+        /*
+         * CRITICAL: You MUST free the memory when you are done with it.
+         * Forgetting to free leads to a "memory leak".
+         */
+        free(single_int_ptr);
+        printf("  The allocated memory has been freed.\n");
+    }
+
+    /* --- 2. calloc (Cleared Allocation) --- */
+    printf("\nSection: calloc - Allocating and zero-initializing memory\n");
+    /*
+     * calloc takes two arguments: the number of elements and the size of each.
+     * Its key feature is that it initializes the allocated memory to all bits zero.
+     */
+    array_ptr = (int*)calloc(5, sizeof(int));
+    if (array_ptr == NULL)
+    {
+        printf("  ERROR: Memory allocation failed!\n");
+    }
+    else
+    {
+        printf("  Memory for an array of 5 integers allocated and zeroed.\n");
+        printf("  Initial values: ");
+        for (i = 0; i < 5; i++)
+        {
+            printf("%d ", array_ptr[i]);
+        }
+        printf("\n");
+        free(array_ptr);
+        printf("  The allocated array has been freed.\n");
+    }
+
+    /* --- 3. realloc (Re-allocation) --- */
+    printf("\nSection: realloc - Resizing a memory block\n");
+    /* First, allocate a small block */
+    realloc_ptr = (int*)malloc(3 * sizeof(int));
+    if (realloc_ptr != NULL)
+    {
+        realloc_ptr[0] = 10;
+        realloc_ptr[1] = 20;
+        realloc_ptr[2] = 30;
+        printf("  Allocated an array for 3 integers: 10 20 30\n");
+
+        /* Now, try to expand the block to hold 6 integers */
+        realloc_ptr = (int*)realloc(realloc_ptr, 6 * sizeof(int));
+        if (realloc_ptr == NULL)
+        {
+            printf("  ERROR: Memory reallocation failed!\n");
+            /* Note: If realloc fails, the original memory is NOT freed. */
+        }
+        else
+        {
+            printf("  Successfully reallocated the array to hold 6 integers.\n");
+            /* The original data is preserved. The new space is uninitialized. */
+            realloc_ptr[3] = 40;
+            realloc_ptr[4] = 50;
+            realloc_ptr[5] = 60;
+
+            printf("  Full array content: ");
+            for (i = 0; i < 6; i++)
+            {
+                printf("%d ", realloc_ptr[i]);
+            }
+            printf("\n");
+            free(realloc_ptr);
+            printf("  The reallocated array has been freed.\n");
+        }
+    }
+
+    /* --- 4. Common Pitfalls --- */
+    printf("\nSection: Common Pitfalls\n");
+    printf("  - Memory Leak: Forgetting to call free().\n");
+    printf("  - Dangling Pointer: Using a pointer after its memory has been freed.\n");
+    printf("  - Double Free: Calling free() twice on the same pointer.\n");
 }
 
 
