@@ -21,6 +21,7 @@
 //#include <windows.h> // Windows console support UTF-8 and Cyrillic
 #include <string.h>
 #include <stdbool.h> //C99 introduced <stdbool.h> for bool, true, false. In C89, we use _Bool or integers.
+#include <stddef.h> // Required for NULL 
 
 
 // Functions declarations (prototype)
@@ -28,6 +29,7 @@ void demoConsoleInOut(void);
 void demoVariablesAndTypes(void);
 void demoTypesCast(void);
 void demoOperators(void);
+void demoPointers(void);
 
 
 // Types and structures definitions
@@ -55,7 +57,8 @@ int main()
     //demoConsoleInOut();
     //demoVariablesAndTypes();
     //demoTypesCast();
-    demoOperators();
+    //demoOperators();
+    demoPointers();
 
 
     return 0;
@@ -426,8 +429,103 @@ void demoOperators(void)
 }
 
 
+/*
+ * Demonstrates the fundamental concepts of pointers in C.
+ */
+void demoPointers(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    int var;
+    int* ptr; /* ptr is a 'pointer to an integer' */
+    int** ptr_to_ptr; /* A pointer to a pointer to an integer */
 
+    int arr[5] = { 100, 200, 300, 400, 500 };
+    int* arr_ptr_start;
+    int* arr_ptr_middle;
+    int i;
 
+    void* generic_ptr;
+    float float_var;
+
+    printf("\n--- DEMO: Pointers in C ---\n");
+
+    /* --- Pointer Definition, Address-of Operator (&), and Assignment --- */
+    printf("\nSection: Pointer Definition and Assignment\n");
+    var = 42;
+    ptr = &var; /* The '&' operator gets the memory address of 'var' */
+
+    printf("  A pointer is a variable that stores a memory address.\n");
+    printf("  Value of 'var': %d\n", var);
+    /* Use %p format specifier to print addresses. Cast to (void*) for portability. */
+    printf("  Address of 'var' (&var): %p\n", (void*)&var);
+    printf("  Value of 'ptr' (the address it stores): %p\n", (void*)ptr);
+
+    /* --- Dereference Operator (*) --- */
+    printf("\nSection: Getting the Value at an Address (Dereferencing)\n");
+    printf("  The '*' operator (dereference) retrieves the value at the stored address.\n");
+    printf("  Value at the address stored in 'ptr' (*ptr): %d\n", *ptr);
+
+    printf("  We can also modify the original variable's value through the pointer.\n");
+    *ptr = 99; /* Change the value at the memory location pointed to by ptr */
+    printf("  After '*ptr = 99;', the value of 'var' is now: %d\n", var);
+
+    /* --- Address of a Pointer (Pointer to Pointer) --- */
+    printf("\nSection: Address of a Pointer\n");
+    ptr_to_ptr = &ptr;
+    printf("  A pointer is also a variable, so it has its own memory address.\n");
+    printf("  Address of 'ptr' (&ptr): %p\n", (void*)&ptr);
+    printf("  Value of 'ptr_to_ptr': %p\n", (void*)ptr_to_ptr);
+    printf("  Value at 'ptr_to_ptr' (*ptr_to_ptr): %p (This is the address of 'var')\n", (void*)*ptr_to_ptr);
+    printf("  Value at the final address (**ptr_to_ptr): %d (This is the value of 'var')\n", **ptr_to_ptr);
+
+    /* --- Pointer Arithmetic --- */
+    printf("\nSection: Pointer Arithmetic\n");
+    printf("  Pointer arithmetic is scaled by the size of the data type it points to.\n");
+    arr_ptr_start = arr; /* An array name decays to a pointer to its first element */
+
+    for (i = 0; i < 5; i++)
+    {
+        /* *(arr_ptr_start + i) is equivalent to arr[i] */
+        printf("  Element %d: Address=%p, Value=%d\n", i,
+            (void*)(arr_ptr_start + i), *(arr_ptr_start + i));
+    }
+    printf("  Note: The address increases by %zu bytes each time (the size of an int).\n", sizeof(int));
+
+    /* --- Pointer Comparison --- */
+    printf("\nSection: Pointer Comparison\n");
+    arr_ptr_start = &arr[0];
+    arr_ptr_middle = &arr[2];
+
+    printf("  Pointers can be compared, which is useful with arrays.\n");
+    if (arr_ptr_start < arr_ptr_middle)
+    {
+        printf("  The address of arr[0] (%p) is less than the address of arr[2] (%p).\n",
+            (void*)arr_ptr_start, (void*)arr_ptr_middle);
+    }
+
+    /* A crucial safety check is comparing a pointer to NULL */
+    ptr = NULL; /* NULL is a special value for a pointer that points to nothing */
+    if (ptr == NULL)
+    {
+        printf("  The pointer 'ptr' is currently a NULL pointer.\n");
+    }
+
+    /* --- Void Pointers and Type Casting --- */
+    printf("\nSection: Void Pointers (Generic Pointers)\n");
+    printf("  A 'void*' can point to any data type but cannot be dereferenced directly.\n");
+
+    /* Pointing to an integer */
+    generic_ptr = &var;
+    printf("  Void pointer now holds address of 'var': %p\n", generic_ptr);
+    /* To get the value, we must cast it back to the correct pointer type first */
+    printf("  Value via cast: %d\n", *((int*)generic_ptr));
+
+    /* Pointing to a float */
+    float_var = 3.14f;
+    generic_ptr = &float_var;
+    printf("  Void pointer now holds address of 'float_var': %p\n", generic_ptr);
+    printf("  Value via cast: %.2f\n", *((float*)generic_ptr));
+}
 
 
 
