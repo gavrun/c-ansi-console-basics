@@ -19,9 +19,12 @@
 
 #include <stdio.h>
 //#include <windows.h> // Windows console support UTF-8 and Cyrillic
-#include <string.h>
-#include <stdbool.h> //C99 introduced <stdbool.h> for bool, true, false. In C89, we use _Bool or integers.
-#include <stddef.h> // Required for NULL 
+
+#include <stdbool.h> // C99 introduced <stdbool.h> for bool, true, false. In C89, we use _Bool or integers.
+#include <stddef.h>  // Required for NULL 
+#include <string.h>  // For string manipulation functions like strcpy, strlen
+#include <stdlib.h>  // For string conversion functions like atoi, atof 
+#include <ctype.h>   // For character type functions like isdigit, isalpha 
 
 
 // File Scope (Global) Variables
@@ -79,6 +82,7 @@ typedef int (*OperationFuncPtr)(int, int);
 /* A function that takes the typedef'd function pointer as a parameter */
 void executeOperation(int x, int y, OperationFuncPtr operation);
 void demoArrays(void);
+void demoStrings(void);
 
 
 
@@ -116,8 +120,8 @@ int main()
     //demoScopes();
     //printf("\nAfter demoScopes finished, global_variable is now: %d\n", global_variable);
     //demoFunctionDef();
-    demoArrays();
-
+    //demoArrays();
+    demoStrings();
 
 
     return 0;
@@ -1292,7 +1296,88 @@ void demoArrays(void)
 }
 
 
+/*
+ * Demonstrates string handling in C.
+ */
+void demoStrings(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    char str1[] = "Hello"; /* Size is determined by compiler (5 chars + 1 null terminator) */
+    char str2[20] = "World"; /* Explicitly sized buffer */
+    char buffer[50];
+    int cmp_result;
 
+    char num_str_int[] = "12345";
+    char num_str_float[] = "3.14";
+    int int_val;
+    double float_val;
+
+    char result_str[50];
+    int my_number = 42;
+
+    char test_str[] = "Data 123 Go!";
+    int i;
+    char c;
+
+    printf("\n--- DEMO: Strings in C ---\n");
+
+    /* --- Strings as Character Arrays --- */
+    printf("\nSection: Strings as Character Arrays\n");
+    printf("  In C, a string is an array of characters ending with a null terminator ('\\0').\n");
+    printf("  String 1: \"%s\"\n", str1);
+    printf("  Size in memory (sizeof): %zu bytes (includes the '\\0')\n", sizeof(str1));
+    printf("  Length (strlen): %zu characters (does NOT include the '\\0')\n", strlen(str1));
+
+    /* --- String Operations (<string.h>) --- */
+    printf("\nSection: Common String Operations\n");
+    /* strcpy: copies a string into a buffer. DANGEROUS if source is larger than destination! */
+    strcpy(buffer, str1);
+    printf("  After strcpy(buffer, str1), buffer is: \"%s\"\n", buffer);
+
+    /* strcat: concatenates (appends) a string to another. Also DANGEROUS! */
+    strcat(buffer, " ");
+    strcat(buffer, str2);
+    printf("  After strcat, buffer is: \"%s\"\n", buffer);
+
+    /* --- String Comparison (<string.h>) --- */
+    printf("\nSection: String Comparison (strcmp)\n");
+    printf("  strcmp compares strings lexicographically (alphabetical order).\n");
+    cmp_result = strcmp("Apple", "Banana");
+    printf("  strcmp(\"Apple\", \"Banana\") returns: %d (a negative value)\n", cmp_result);
+    cmp_result = strcmp("Banana", "Apple");
+    printf("  strcmp(\"Banana\", \"Apple\") returns: %d (a positive value)\n", cmp_result);
+    cmp_result = strcmp("Apple", "Apple");
+    printf("  strcmp(\"Apple\", \"Apple\") returns: %d (zero for equal strings)\n", cmp_result);
+
+    /* --- String to Number Conversion (<stdlib.h>) --- */
+    printf("\nSection: Converting Strings to Numbers\n");
+    int_val = atoi(num_str_int); /* ASCII to Integer */
+    float_val = atof(num_str_float); /* ASCII to Float/Double */
+    printf("  String \"%s\" converted to integer: %d\n", num_str_int, int_val);
+    printf("  String \"%s\" converted to double: %f\n", num_str_float, float_val);
+    printf("  We can now perform math: %d * 2 = %d\n", int_val, int_val * 2);
+
+    /* --- Number to String Conversion (sprintf) --- */
+    printf("\nSection: Converting Numbers to Strings\n");
+    /* sprintf works like printf, but "prints" its output into a string buffer. */
+    sprintf(result_str, "The magic number is %d.", my_number);
+    printf("  The newly created string is: \"%s\"\n", result_str);
+
+    /* --- Character Checks (<ctype.h>) --- */
+    printf("\nSection: Character Type Checking\n");
+    printf("  Analyzing the string: \"%s\"\n", test_str);
+    for (i = 0; test_str[i] != '\0'; i++)
+    {
+        c = test_str[i];
+        printf("    '%c' is: ", c);
+        if (isalpha(c)) printf("alpha, ");
+        if (isdigit(c)) printf("digit, ");
+        if (isspace(c)) printf("space, ");
+        if (isupper(c)) printf("uppercase, ");
+        if (islower(c)) printf("lowercase, ");
+        printf("to_upper: %c, to_lower: %c\n", toupper(c), tolower(c));
+    }
+}
 
 
 
