@@ -31,6 +31,7 @@ void demoTypesCast(void);
 void demoOperators(void);
 void demoPointers(void);
 void demoConstantPtr(void);
+void demoControlFlowStructures(void);
 
 
 // Types and structures definitions
@@ -60,7 +61,8 @@ int main()
     //demoTypesCast();
     //demoOperators();
     //demoPointers();
-    demoConstantPtr();
+    //demoConstantPtr();
+    demoControlFlowStructures();
 
 
     return 0;
@@ -608,6 +610,132 @@ void demoConstantPtr(void)
     /* const_ptr_to_const = &val2; // COMPILER ERROR! */
     printf("  This is the most restrictive type. It is read-only in every way.\n");
 }
+
+
+/*
+ * Demonstrates conditional statements and loops in C.
+ */
+void demoControlFlowStructures(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    int number;
+    int items_read;
+    int a, b, max_val;
+    int i;
+    int countdown;
+    int do_while_counter;
+
+    printf("\n--- DEMO: Control Flow Structures ---\n");
+
+    printf("Please enter an integer number: ");
+    items_read = scanf("%d", &number);
+
+    /* Always check the return value of scanf to handle bad input */
+    if (items_read != 1) {
+        printf("Invalid input. Exiting demo.\n");
+        return; /* Exit the function */
+    }
+
+    /* --- If, Else If, Else Statements --- */
+    printf("\nSection: If / Else If / Else\n");
+    if (number > 0)
+    {
+        printf("  The number %d is positive.\n", number);
+    }
+    else if (number < 0)
+    {
+        printf("  The number %d is negative.\n", number);
+    }
+    else
+    {
+        printf("  The number is exactly zero.\n", number);
+    }
+
+    /* --- Switch Statement --- */
+    printf("\nSection: Switch Statement\n");
+    printf("  Checking the number %d against a few cases:\n", number);
+    switch (number)
+    {
+    case 0:
+        printf("    Case 0: The number is zero.\n");
+        break; /* 'break' exits the switch block */
+    case 1:
+        printf("    Case 1: The number is one.\n");
+        break;
+    case 7:
+        printf("    Case 7: The number is seven.\n");
+        break;
+    case 2:
+    case 3:
+    case 5:
+        printf("    Case 2, 3, or 5: The number is a small prime.\n");
+        /* Note the 'fall-through' from case 2 and 3 to this line */
+        break;
+    default:
+        /* This block runs if no other case matches */
+        printf("    Default: The number is not 0, 1, 2, 3, 5, or 7.\n");
+        break;
+    }
+
+    /* --- Ternary Operator (?:) --- */
+    printf("\nSection: Ternary Operator\n");
+    a = 15;
+    b = 8;
+    /* A compact way to write a simple if-else statement */
+    max_val = (a > b) ? a : b;
+    printf("  The maximum of %d and %d is: %d\n", a, b, max_val);
+
+    /* --- For Loop --- */
+    printf("\nSection: For Loop\n");
+    printf("  Counting from 1 to 5: ");
+    for (i = 1; i <= 5; i++)
+    {
+        printf("%d ", i);
+    }
+    printf("\n");
+
+    /* --- While Loop --- */
+    printf("\nSection: While Loop\n");
+    printf("  Countdown from 5 to 1: ");
+    countdown = 5;
+    while (countdown > 0)
+    {
+        printf("%d ", countdown);
+        countdown--; /* Decrement the counter */
+    }
+    printf("\n");
+
+    /* --- Do-While Loop --- */
+    printf("\nSection: Do-While Loop\n");
+    printf("  This loop's body always executes at least once.\n");
+    do_while_counter = 10;
+    do
+    {
+        printf("    Inside do-while loop. Counter value: %d\n", do_while_counter);
+        do_while_counter++;
+    } while (do_while_counter < 5); /* Condition is false, but loop ran once */
+    printf("    Loop finished.\n");
+
+    /* --- Break and Continue --- */
+    printf("\nSection: Break and Continue\n");
+    printf("  Looping from 1 to 10. Skipping 4, breaking at 8.\n  ");
+    for (i = 1; i <= 10; i++)
+    {
+        if (i == 4)
+        {
+            /* 'continue' skips the rest of this iteration and starts the next one */
+            continue;
+        }
+        if (i == 8)
+        {
+            /* 'break' exits the loop entirely */
+            break;
+        }
+        printf("%d ", i);
+    }
+    printf("\n");
+}
+
 
 
 
