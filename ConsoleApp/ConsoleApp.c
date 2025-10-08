@@ -29,6 +29,30 @@
 #include <math.h>    // For all math functions 
 
 
+// Preprocessor definitions and macros
+/*
+ * #define creates a macro. The preprocessor will replace every instance
+ * of PI in this file with 3.14159 before the compiler sees the code.
+ */
+#define PI 3.14159
+
+ /*
+  * This is a function-like macro. It takes an argument 'r'.
+  * Note the heavy use of parentheses. This is a crucial best practice to
+  * avoid operator precedence issues when the macro is expanded.
+  */
+#define CIRCLE_AREA(r) ((PI) * (r) * (r))
+
+  /*
+   * This macro is used to control conditional compilation. If it is defined,
+   * certain blocks of code will be included by the preprocessor.
+   * You can comment this out to see the #else blocks get compiled instead.
+   */
+#define DEBUG_MODE
+
+//#define APP_VERSION 1
+#define APP_VERSION 2
+
 
 // File Scope (Global) Variables
 /*
@@ -116,6 +140,7 @@ void demoStaticMemory(void);
 void static_lifetime_function(void);
 int function_call_example(int param1, int param2);
 void demoDynamicMemory(void);
+void demoPreprocessor(void);
 
 
 // Types and structures definitions
@@ -167,10 +192,6 @@ enum Medal {
     SILVER, /* This will be 11 */
     GOLD = 20
 };
-
-
-// Preprocessor macros
-
 
 
 // MAIN
@@ -239,7 +260,8 @@ int main(int argc, char* argv[])
     //demoEnumerations();
 
     //demoStaticMemory();
-    demoDynamicMemory();
+    //demoDynamicMemory();
+    demoPreprocessor();
 
 
     return 0;
@@ -2101,4 +2123,63 @@ void demoDynamicMemory(void)
     printf("  - Double Free: Calling free() twice on the same pointer.\n");
 }
 
+
+/*
+ * Demonstrates the features of the C preprocessor.
+ */
+void demoPreprocessor(void)
+{
+    double radius = 5.0;
+    double area;
+
+    printf("\n--- DEMO: The C Preprocessor ---\n");
+    printf("  The preprocessor is a tool that modifies your source code based on\n");
+    printf("  directives (lines starting with #) before actual compilation begins.\n");
+
+    /* --- 1. #include --- */
+    printf("\nSection: #include\n");
+    printf("  The '#include <stdio.h>' directive at the top of this file is a command\n");
+    printf("  to the preprocessor to find the 'stdio.h' file and paste its entire\n");
+    printf("  contents into this source file.\n");
+
+    /* --- 2. #define --- */
+    printf("\nSection: #define - Creating Macros\n");
+    /* Using the simple constant macro */
+    printf("  The value of the macro 'PI' is: %f\n", PI);
+
+    /* Using the function-like macro */
+    area = CIRCLE_AREA(radius);
+    printf("  The area of a circle with radius %.1f is: %f\n", radius, area);
+
+    area = CIRCLE_AREA(1 + 4); /* Expands to ((3.14159) * (1 + 4) * (1 + 4)) */
+    printf("  The macro works correctly with expressions like (1+4) thanks to parentheses.\n");
+
+    /* --- 3. Conditional Compilation --- */
+    printf("\nSection: Conditional Compilation\n");
+
+    /* #ifdef checks if a macro is defined */
+#ifdef DEBUG_MODE
+    printf("  - This message is printed because DEBUG_MODE is defined.\n");
+    printf("  - This is useful for including debugging code that shouldn't be in a release.\n");
+#else
+    printf("  - This message is printed because DEBUG_MODE is NOT defined.\n");
+#endif
+
+    /* #if allows for more complex integer-based conditions */
+#if APP_VERSION == 1
+    printf("  - Compiling code for Application Version 1.\n");
+#elif APP_VERSION == 2
+    printf("  - Compiling code for Application Version 2.\n");
+#else
+    printf("  - Compiling for an unknown application version.\n");
+#endif
+
+    /* --- 4. Predefined Macros --- */
+    printf("\nSection: Standard Predefined Macros\n");
+    printf("  The C standard provides several useful macros automatically:\n");
+    printf("  - This file is: %s\n", __FILE__);
+    printf("  - This is line number: %d\n", __LINE__);
+    printf("  - This code was compiled on: %s\n", __DATE__);
+    printf("  - This code was compiled at: %s\n", __TIME__);
+}
 
