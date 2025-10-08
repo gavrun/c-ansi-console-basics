@@ -30,6 +30,7 @@ void demoVariablesAndTypes(void);
 void demoTypesCast(void);
 void demoOperators(void);
 void demoPointers(void);
+void demoConstantPtr(void);
 
 
 // Types and structures definitions
@@ -58,7 +59,8 @@ int main()
     //demoVariablesAndTypes();
     //demoTypesCast();
     //demoOperators();
-    demoPointers();
+    //demoPointers();
+    demoConstantPtr();
 
 
     return 0;
@@ -526,6 +528,94 @@ void demoPointers(void)
     printf("  Void pointer now holds address of 'float_var': %p\n", generic_ptr);
     printf("  Value via cast: %.2f\n", *((float*)generic_ptr));
 }
+
+
+/*
+ * Demonstrates the use of the 'const' keyword with pointers.
+ */
+void demoConstantPtr(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    int val1, val2;
+    const int immutable_val = 100;
+
+    /* Case 1: Pointer to a constant integer */
+    const int* ptr_to_const;
+
+    /* Case 2: Constant pointer to an integer. Must be initialized at declaration. */
+    int* const const_ptr = &val1;
+
+    /* Case 3: Constant pointer to a constant integer. Must be initialized. */
+    const int* const const_ptr_to_const = &val1;
+
+    printf("\n--- DEMO: Pointers and Constants ---\n");
+
+    val1 = 10;
+    val2 = 20;
+
+    /* --- Basic Constant Variable --- */
+    printf("\nSection: Basic Constant Variable\n");
+    printf("  A 'const' variable cannot be changed after initialization.\n");
+    printf("  Value of 'immutable_val': %d\n", immutable_val);
+    /* immutable_val = 200; // COMPILER ERROR: Cannot assign to a read-only variable. */
+
+    /* --- Case 1: Pointer to a Constant --- */
+    /* Read 'const int*' as "a pointer to an integer that is constant". */
+    printf("\nSection: Pointer to a Constant (const int*)\n");
+    printf("  Rule: The VALUE pointed to cannot be changed through this pointer.\n");
+
+    ptr_to_const = &val1;
+    printf("  Pointer 'ptr_to_const' now points to 'val1'.\n");
+    printf("  Value read via pointer: %d\n", *ptr_to_const);
+
+    /* This is NOT allowed. You cannot change the data it points to. */
+    /* *ptr_to_const = 30; // COMPILER ERROR: Assignment of read-only location. */
+    printf("  Attempting to change the value via '*ptr_to_const = 30;' would cause a compiler error.\n");
+
+    /* This IS allowed. The pointer itself can be changed to point elsewhere. */
+    ptr_to_const = &val2;
+    printf("  The pointer itself can be changed. It now points to 'val2'.\n");
+    printf("  New value read via pointer: %d\n", *ptr_to_const);
+
+    /* It can also point to a true constant variable. */
+    ptr_to_const = &immutable_val;
+    printf("  It can also point to a 'const int' variable. Value: %d\n", *ptr_to_const);
+
+    /* --- Case 2: Constant Pointer --- */
+    /* Read 'int* const' as "a constant pointer to an integer". */
+    printf("\nSection: Constant Pointer (int* const)\n");
+    printf("  Rule: The POINTER itself cannot be changed to point to a different address.\n");
+
+    printf("  'const_ptr' was initialized to point to 'val1'. Value: %d\n", *const_ptr);
+
+    /* This IS allowed. The data it points to can be modified. */
+    *const_ptr = 50;
+    printf("  The value it points to can be changed. 'val1' is now: %d\n", val1);
+
+    /* This is NOT allowed. The pointer cannot be reassigned. */
+    /* const_ptr = &val2; // COMPILER ERROR: Assignment of read-only variable 'const_ptr'. */
+    printf("  Attempting to change the pointer 'const_ptr = &val2;' would cause a compiler error.\n");
+
+    /* --- Case 3: Constant Pointer to a Constant --- */
+    /* Read 'const int* const' as "a constant pointer to an integer that is constant". */
+    printf("\nSection: Constant Pointer to a Constant (const int* const)\n");
+    printf("  Rule: NEITHER the pointer NOR the value it points to can be changed.\n");
+
+    printf("  'const_ptr_to_const' points to 'val1'. Value read: %d\n", *const_ptr_to_const);
+
+    /* Neither of these operations are allowed. */
+    /* *const_ptr_to_const = 60; // COMPILER ERROR! */
+    /* const_ptr_to_const = &val2; // COMPILER ERROR! */
+    printf("  This is the most restrictive type. It is read-only in every way.\n");
+}
+
+
+
+
+
+
+
+
 
 
 
