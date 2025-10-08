@@ -78,6 +78,7 @@ int divide(int a, int b);
 typedef int (*OperationFuncPtr)(int, int);
 /* A function that takes the typedef'd function pointer as a parameter */
 void executeOperation(int x, int y, OperationFuncPtr operation);
+void demoArrays(void);
 
 
 
@@ -114,7 +115,8 @@ int main()
     //demoFunctionPtr();
     //demoScopes();
     //printf("\nAfter demoScopes finished, global_variable is now: %d\n", global_variable);
-    demoFunctionDef();
+    //demoFunctionDef();
+    demoArrays();
 
 
 
@@ -1199,7 +1201,95 @@ void executeOperation(int x, int y, OperationFuncPtr operation)
 }
 
 
+/*
+ * Demonstrates the declaration, initialization, and usage of arrays in C.
+ */
+void demoArrays(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    int numbers[5] = { 10, 20, 30, 40, 50 };
+    int i, j;
+    size_t num_elements;
 
+    const char vowels[] = { 'A', 'E', 'I', 'O', 'U' };
+
+    int matrix[3][4] = {
+        {1, 2, 3, 4},
+        {5, 6, 7, 8},
+        {9, 10, 11, 12}
+    };
+    size_t num_rows;
+    size_t num_cols;
+
+    printf("\n--- DEMO: Arrays in C ---\n");
+
+    /* --- One-Dimensional Array --- */
+    printf("\nSection: One-Dimensional Array\n");
+
+    printf("  Array 'numbers' has been declared and initialized.\n");
+
+    /* Accessing elements */
+    printf("  Accessing elements by index (0-based):\n");
+    printf("    The first element, numbers[0], is: %d\n", numbers[0]);
+    printf("    The third element, numbers[2], is: %d\n", numbers[2]);
+
+    /* Modifying an element */
+    numbers[0] = 11;
+    printf("    After modification, numbers[0] is now: %d\n", numbers[0]);
+
+    /* Iterating over the array */
+    printf("  Iterating through all elements with a for loop:\n    ");
+    for (i = 0; i < 5; i++)
+    {
+        printf("%d ", numbers[i]);
+    }
+    printf("\n");
+
+    /* --- Array Size and Element Count --- */
+    printf("\nSection: Finding Array Size and Length\n");
+    printf("  The total size of the 'numbers' array in memory is: %zu bytes\n", sizeof(numbers));
+    printf("  The size of a single int element is: %zu bytes\n", sizeof(numbers[0]));
+
+    /* This is the standard, portable way to calculate the number of elements in an array */
+    num_elements = sizeof(numbers) / sizeof(numbers[0]);
+    printf("  Therefore, the number of elements in the array is: %zu\n", num_elements);
+
+    /* --- Constant Arrays --- */
+    printf("\nSection: Constant Arrays\n");
+    printf("  An array declared with 'const' cannot have its elements modified.\n");
+    printf("  The elements of the 'vowels' array are: ");
+    for (i = 0; i < 5; i++)
+    {
+        printf("%c ", vowels[i]);
+    }
+    printf("\n");
+    /* vowels[0] = 'B'; // This line would cause a COMPILER ERROR. */
+    printf("  Attempting to modify a const array element results in a compiler error.\n");
+
+    /* --- Two-Dimensional Array (Matrix) --- */
+    printf("\nSection: Two-Dimensional Array\n");
+    printf("  A 2D array is an array of arrays, often visualized as a grid or matrix.\n");
+
+    /* Accessing an element */
+    printf("  Accessing an element at row 1, column 2: matrix[1][2] = %d\n", matrix[1][2]);
+
+    /* Finding dimensions */
+    num_rows = sizeof(matrix) / sizeof(matrix[0]);
+    num_cols = sizeof(matrix[0]) / sizeof(matrix[0][0]);
+    printf("  The matrix has %zu rows and %zu columns.\n", num_rows, num_cols);
+
+    /* Iterating over the 2D array with nested loops */
+    printf("  Printing the full matrix:\n");
+    for (i = 0; i < num_rows; i++)
+    {
+        printf("    "); /* Indent for alignment */
+        for (j = 0; j < num_cols; j++)
+        {
+            printf("%-4d", matrix[i][j]); /* Print with padding */
+        }
+        printf("\n");
+    }
+}
 
 
 
