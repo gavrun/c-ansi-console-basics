@@ -89,11 +89,29 @@ void demoStrings(void);
 void demoMainCmdParams(int argc, char* argv[]);
 void demoDateTime(void);
 void demoMath(void);
-
+void demoStructures(void);
 
 
 // Types and structures definitions
 
+/*
+ * A structure can be defined to group related variables.
+ * This defines a new type called 'struct Point'.
+ */
+struct Point {
+    int x;
+    int y;
+};
+
+/*
+ * This structure contains another structure as one of its members.
+ * This is known as a nested structure.
+ */
+struct Player {
+    char name[50];
+    int level;
+    struct Point position; /* Nested structure */
+};
 
 
 // Preprocessor macros
@@ -160,7 +178,8 @@ int main(int argc, char* argv[])
     //demoMainCmdParams(argc, argv);
 
     //demoDateTime();
-    demoMath();
+    //demoMath();
+    demoStructures();
 
 
     return 0;
@@ -1609,6 +1628,73 @@ void demoMath(void)
     y = 3.0;
     printf("  Floating-point remainder of %.1f / %.1f (fmod) is: %.1f\n", x, y, fmod(x, y));
 }
+
+
+/*
+ * Demonstrates defining, initializing, and using structures.
+ */
+void demoStructures(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    struct Player player1;
+    struct Player player2 = { "Gandalf", 20, {100, 200} }; /* Initialization with a list */
+    struct Player player3;
+
+    printf("\n--- DEMO: Structures in C ---\n");
+
+    /* --- Initialization by Member Assignment --- */
+    printf("\nSection: Initialization by Member Assignment\n");
+    /* We can initialize a structure by assigning values to its members one by one. */
+    /* Use strcpy for string members, not the '=' operator. */
+    strcpy(player1.name, "Aragorn");
+    player1.level = 15;
+    player1.position.x = 50;
+    player1.position.y = 75;
+    printf("  'player1' has been initialized member by member.\n");
+
+    /* --- Accessing Structure Members --- */
+    printf("\nSection: Accessing Structure Members\n");
+    /* The dot operator (.) is used to access individual members. */
+    printf("  Player 1 Name: %s\n", player1.name);
+    printf("  Player 1 Level: %d\n", player1.level);
+    /* To access a nested structure's member, use the dot operator twice. */
+    printf("  Player 1 Position: (x=%d, y=%d)\n", player1.position.x, player1.position.y);
+
+    /* --- Initialization with an Initializer List --- */
+    printf("\nSection: Initialization with an Initializer List\n");
+    printf("  'player2' was initialized at the time of declaration.\n");
+    printf("  Player 2 Name: %s\n", player2.name);
+    printf("  Player 2 Level: %d\n", player2.level);
+    printf("  Player 2 Position: (x=%d, y=%d)\n", player2.position.x, player2.position.y);
+    /* Note: C99 introduced "designated initializers" like .name="Gandalf", but this list-based */
+    /* method is compatible with C89. */
+
+    /* --- Copying Structures --- */
+    printf("\nSection: Copying Structures\n");
+    /*
+     * You can copy one structure to another using a simple assignment.
+     * This performs a member-by-member copy of all values.
+     */
+    player3 = player1;
+    printf("  'player3' has been created by copying 'player1'.\n");
+    printf("  Player 3 Name: %s\n", player3.name);
+    printf("  Player 3 Level: %d\n", player3.level);
+
+    /* To prove it's a true copy, let's modify player3 and check player1 */
+    printf("  Modifying the copy: player3.level is now 16.\n");
+    player3.level = 16;
+    strcpy(player3.name, "King Elessar");
+
+    printf("  After modifying the copy:\n");
+    printf("    Player 3's level is now: %d\n", player3.level);
+    printf("    Player 1's level is still: %d (unchanged)\n", player1.level);
+    printf("    Player 3's name is now: \"%s\"\n", player3.name);
+    printf("    Player 1's name is still: \"%s\" (unchanged)\n", player1.name);
+}
+
+
+
+
 
 
 
