@@ -27,6 +27,7 @@
 void demoConsoleInOut(void);
 void demoVariablesAndTypes(void);
 void demoTypesCast(void);
+void demoOperators(void);
 
 
 // Types and structures definitions
@@ -53,7 +54,8 @@ int main()
     // Uncomment a demo function
     //demoConsoleInOut();
     //demoVariablesAndTypes();
-    demoTypesCast();
+    //demoTypesCast();
+    demoOperators();
 
 
     return 0;
@@ -337,6 +339,94 @@ void demoTypesCast(void)
     printf("    This allows a pointer to point to any data type.\n");
     printf("    This topic will be explored in the pointers demo.\n");
 }
+
+
+/*
+ * Demonstrates the various operators available in C.
+ */
+void demoOperators(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    int a, b;
+    int logic_true, logic_false;
+    unsigned char p, q; /* Use unsigned for bitwise ops to avoid sign-related issues */
+    int z;
+    int i;
+    int max_val;
+
+    printf("\n--- DEMO: Operators in C ---\n");
+
+    a = 10;
+    b = 4;
+
+    /* --- Arithmetic Operators --- */
+    printf("\nSection: Arithmetic Operators (a=%d, b=%d)\n", a, b);
+    printf("  Addition (a + b)         = %d\n", a + b);
+    printf("  Subtraction (a - b)      = %d\n", a - b);
+    printf("  Multiplication (a * b)   = %d\n", a * b);
+    printf("  Division (a / b)         = %d (Note: Integer division truncates)\n", a / b);
+    printf("  Modulus (a %% b)          = %d (Remainder of the division)\n", a % b);
+
+    /* --- Relational Operators --- */
+    printf("\nSection: Relational Operators (a=%d, b=%d)\n");
+    printf("  Relational operators return 1 for true and 0 for false.\n");
+    printf("  Is Equal (a == b)        = %d\n", a == b);
+    printf("  Is Not Equal (a != b)    = %d\n", a != b);
+    printf("  Greater Than (a > b)     = %d\n", a > b);
+    printf("  Less Than (a < b)        = %d\n", a < b);
+    printf("  Greater or Equal (a >= b) = %d\n", a >= b);
+    printf("  Less or Equal (a <= b)   = %d\n", a <= b);
+
+    /* --- Logical Operators --- */
+    logic_true = 1;  /* In C, any non-zero value is considered true */
+    logic_false = 0; /* Zero is considered false */
+    printf("\nSection: Logical Operators (true=%d, false=%d)\n", logic_true, logic_false);
+    printf("  Logical AND (true && false) = %d\n", logic_true && logic_false);
+    printf("  Logical OR (true || false)  = %d\n", logic_true || logic_false);
+    printf("  Logical NOT (!true)         = %d\n", !logic_true);
+
+    /* --- Bitwise Operators --- */
+    p = 5; /* Binary: 00000101 */
+    q = 9; /* Binary: 00001001 */
+    printf("\nSection: Bitwise Operators (p=5, q=9)\n");
+    printf("  Bitwise AND (p & q)      = %d (Binary: 00000001)\n", p & q);
+    printf("  Bitwise OR (p | q)       = %d (Binary: 00001101)\n", p | q);
+    printf("  Bitwise XOR (p ^ q)      = %d (Binary: 00001100)\n", p ^ q);
+    printf("  Bitwise NOT (~p)         = %d (Flips all bits)\n", ~p);
+    printf("  Left Shift (p << 1)      = %d (Binary: 00001010)\n", p << 1);
+    printf("  Right Shift (p >> 1)     = %d (Binary: 00000010)\n", p >> 1);
+
+    /* --- Assignment Operators --- */
+    z = 100;
+    printf("\nSection: Assignment Operators (z starts at 100)\n");
+    printf("  Initial z                  = %d\n", z);
+    z += 10; /* Equivalent to z = z + 10 */
+    printf("  z += 10 (Add and assign)   = %d\n", z);
+    z -= 20; /* Equivalent to z = z - 20 */
+    printf("  z -= 20 (Sub and assign)   = %d\n", z);
+    z *= 3;  /* Equivalent to z = z * 3 */
+    printf("  z *= 3  (Mul and assign)   = %d\n", z);
+    z /= 5;  /* Equivalent to z = z / 5 */
+    printf("  z /= 5  (Div and assign)   = %d\n", z);
+
+    /* --- Increment/Decrement Operators --- */
+    i = 5;
+    printf("\nSection: Increment/Decrement Operators (i starts at 5)\n");
+    /* Post-increment: The value of 'i' is used first, then it is incremented. */
+    printf("  Post-increment (i++): Value used is %d, then i becomes %d.\n", i++, i);
+
+    /* Pre-increment: The value of 'i' is incremented first, then it is used. */
+    printf("  Pre-increment (++i): Value is incremented to %d, then used.\n", ++i);
+
+    /* Post-decrement: The value of 'i' is used first, then it is decremented. */
+    printf("  Post-decrement (i--): Value used is %d, then i becomes %d.\n", i--, i);
+
+    /* Pre-decrement: The value of 'i' is decremented first, then it is used. */
+    printf("  Pre-decrement (--i): Value is decremented to %d, then used.\n", --i);
+}
+
+
+
 
 
 
