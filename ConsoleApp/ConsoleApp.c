@@ -93,6 +93,8 @@ void demoStructures(void);
 void demoStructurePtrs(void);
 /* This function takes a pointer to a struct Item as a parameter */
 void updateItem(struct Item* item_ptr);
+void demoEnumerations(void);
+void printGameState(enum GameState state);
 
 
 // Types and structures definitions
@@ -120,6 +122,29 @@ struct Item {
     char name[50];
     int quantity;
     double price;
+};
+
+/*
+ * Defines a new type called 'enum GameState'.
+ * By default, the compiler assigns integer values starting from 0.
+ * So, MENU = 0, PLAYING = 1, PAUSED = 2, GAMEOVER = 3.
+ */
+enum GameState {
+    MENU,
+    PLAYING,
+    PAUSED,
+    GAMEOVER
+};
+
+/*
+ * Explicitly assign integer values to enumerators.
+ * Subsequent unassigned enumerators will increment from the last assigned value.
+ * Here, BRONZE = 10, SILVER = 11, GOLD = 20.
+ */
+enum Medal {
+    BRONZE = 10,
+    SILVER, /* This will be 11 */
+    GOLD = 20
 };
 
 
@@ -189,7 +214,8 @@ int main(int argc, char* argv[])
     //demoDateTime();
     //demoMath();
     //demoStructures();
-    demoStructurePtrs();
+    //demoStructurePtrs();
+    demoEnumerations();
 
 
     return 0;
@@ -1777,7 +1803,83 @@ void updateItem(struct Item* item_ptr)
 }
 
 
+/*
+ * Demonstrates defining and using enumerations.
+ */
+void demoEnumerations(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
 
+    /* Declare a variable of the enum type */
+    enum GameState current_state;
+    enum Medal player_medal;
+
+    printf("\n--- DEMO: Enumerations (enum) ---\n");
+
+    /* --- Assigning and Using Enum Values --- */
+    printf("\nSection: Assigning and Using Enum Values\n");
+
+    /* Assign one of the named constants to the variable */
+    current_state = PLAYING;
+
+    printf("  The current game state is set to PLAYING.\n");
+
+    /* Enums are fundamentally integers */
+    printf("  The integer value of PLAYING is: %d\n", current_state);
+
+    if (current_state == PLAYING)
+    {
+        printf("  The code confirms: current_state == PLAYING.\n");
+    }
+
+    /* --- Enums in a Switch Statement --- */
+    printf("\nSection: Using Enums in a Switch Statement\n");
+    printf("  Enums make switch statements highly readable.\n");
+
+    current_state = GAMEOVER;
+    printGameState(current_state);
+
+    current_state = MENU;
+    printGameState(current_state);
+
+    /* --- Enums with Explicit Values --- */
+    printf("\nSection: Enums with Explicit Integer Values\n");
+
+    player_medal = GOLD;
+    printf("  The player's medal is GOLD.\n");
+    printf("  The integer value of GOLD is: %d\n", player_medal);
+
+    player_medal = SILVER;
+    printf("  The player's medal is SILVER.\n");
+    printf("  The integer value of SILVER is: %d\n", player_medal);
+}
+
+/*
+ * A helper function to demoEnumerations() demo that takes an enum as a parameter 
+ * and prints a descriptive string. This is a very common pattern.
+ */
+void printGameState(enum GameState state)
+{
+    printf("    -> Checking game state: ");
+    switch (state)
+    {
+    case MENU:
+        printf("Currently in the Main Menu.\n");
+        break;
+    case PLAYING:
+        printf("The game is currently being played.\n");
+        break;
+    case PAUSED:
+        printf("The game is paused.\n");
+        break;
+    case GAMEOVER:
+        printf("Game Over!\n");
+        break;
+    default:
+        printf("Unknown game state.\n");
+        break;
+    }
+}
 
 
 
