@@ -25,6 +25,7 @@
 #include <string.h>  // For string manipulation functions like strcpy, strlen
 #include <stdlib.h>  // For string conversion functions like atoi, atof 
 #include <ctype.h>   // For character type functions like isdigit, isalpha 
+#include <time.h>    // For all date and time functions 
 
 
 // File Scope (Global) Variables
@@ -85,6 +86,7 @@ void demoArrays(void);
 void demoStrings(void);
 /* This function will take the command-line parameters from main */
 void demoMainCmdParams(int argc, char* argv[]);
+void demoDateTime(void);
 
 
 
@@ -153,7 +155,9 @@ int main(int argc, char* argv[])
         }
         printf("\n");
     }
-    demoMainCmdParams(argc, argv);
+    //demoMainCmdParams(argc, argv);
+
+    demoDateTime();
 
 
     return 0;
@@ -1454,6 +1458,90 @@ void demoMainCmdParams(int argc, char* argv[])
          */
         printf("    argv[%d]: %s\n", i, argv[i]);
     }
+}
+
+
+/*
+ * Demonstrates working with dates and times in C.
+ */
+void demoDateTime(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    time_t current_time_raw;
+    struct tm* time_info;
+    char buffer[80];
+    time_t start_time, end_time;
+    double elapsed_seconds;
+    long i;
+
+    printf("\n--- DEMO: Date and Time Operations ---\n");
+
+    /* --- Getting the Current Time (time_t) --- */
+    printf("\nSection: Getting the Current Time\n");
+    /*
+     * The time() function returns the current calendar time as a time_t object.
+     * time_t is an arithmetic type representing the number of seconds elapsed
+     * since the "Epoch" (00:00:00 UTC, January 1, 1970).
+     */
+    time(&current_time_raw);
+    printf("  Raw time_t value (seconds since Epoch): %ld\n", (long)current_time_raw);
+
+
+    /* --- Converting time_t to a Readable Format (struct tm) --- */
+    printf("\nSection: Converting to a Human-Readable Structure\n");
+    /*
+     * The localtime() function converts a time_t value to a tm structure,
+     * which breaks down the time into its components (year, month, day, etc.).
+     * Note: localtime() returns a pointer to a static, internal buffer that
+     * can be overwritten by subsequent calls.
+     */
+    time_info = localtime(&current_time_raw);
+    printf("  The time_t value has been converted to a 'struct tm'.\n");
+
+    /* --- Formatting Time as a String --- */
+    printf("\nSection: Formatting Time as a String\n");
+    /* Method 1: asctime() - Simple but fixed format */
+    printf("  Using asctime() for a standard format: %s", asctime(time_info));
+
+    /* Method 2: strftime() - Flexible and powerful */
+    /*
+     * strftime() formats the time according to provided format codes.
+     * %Y = Year with century (e.g., 2023)
+     * %m = Month as a number (01-12)
+     * %d = Day of the month (01-31)
+     * %H = Hour (00-23), %M = Minute (00-59), %S = Second (00-60)
+     */
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", time_info);
+    printf("  Using strftime() for a custom format: %s\n", buffer);
+
+    /* --- Accessing Individual Time Components --- */
+    printf("\nSection: Accessing Individual Time Components\n");
+    /*
+     * IMPORTANT: Note the offsets required for year and month.
+     * tm_year is the number of years since 1900.
+     * tm_mon is the month, from 0 (January) to 11 (December).
+     */
+    printf("  Year: %d\n", time_info->tm_year + 1900);
+    printf("  Month: %d\n", time_info->tm_mon + 1);
+    printf("  Day: %d\n", time_info->tm_mday);
+    printf("  Time: %02d:%02d:%02d\n", time_info->tm_hour, time_info->tm_min, time_info->tm_sec);
+
+    /* --- Calculating Time Differences --- */
+    printf("\nSection: Calculating Elapsed Time\n");
+    printf("  Performing a task to measure elapsed time...\n");
+
+    start_time = time(NULL);
+
+    /* Simulate some work by running a long loop */
+    for (i = 0; i < 2000000000; i++) {
+        /* This loop just consumes CPU time */
+    }
+
+    end_time = time(NULL);
+
+    /* The difftime() function safely calculates the difference in seconds */
+    elapsed_seconds = difftime(end_time, start_time);
+    printf("  Task finished. Elapsed time: %.2f seconds\n", elapsed_seconds);
 }
 
 
