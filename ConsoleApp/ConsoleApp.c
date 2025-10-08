@@ -26,6 +26,7 @@
 #include <stdlib.h>  // For string conversion functions like atoi, atof 
 #include <ctype.h>   // For character type functions like isdigit, isalpha 
 #include <time.h>    // For all date and time functions 
+#include <math.h>    // For all math functions 
 
 
 // File Scope (Global) Variables
@@ -87,6 +88,7 @@ void demoStrings(void);
 /* This function will take the command-line parameters from main */
 void demoMainCmdParams(int argc, char* argv[]);
 void demoDateTime(void);
+void demoMath(void);
 
 
 
@@ -157,7 +159,8 @@ int main(int argc, char* argv[])
     }
     //demoMainCmdParams(argc, argv);
 
-    demoDateTime();
+    //demoDateTime();
+    demoMath();
 
 
     return 0;
@@ -1545,7 +1548,67 @@ void demoDateTime(void)
 }
 
 
+/*
+ * Demonstrates common mathematical functions from <math.h>.
+ */
+void demoMath(void)
+{
+    /* C89 requires all variables to be declared at the start of a block */
+    double x, y;
+    double angle_deg, angle_rad, pi;
 
+    printf("\n--- DEMO: Mathematical Functions ---\n");
+
+    /* --- Basic Arithmetic Functions --- */
+    printf("\nSection: Basic Arithmetic Functions\n");
+    x = 64.0;
+    printf("  Square root of %.1f (sqrt) is: %.1f\n", x, sqrt(x));
+
+    x = 2.0;
+    y = 10.0;
+    printf("  %.1f to the power of %.1f (pow) is: %.1f\n", x, y, pow(x, y));
+
+    x = -123.45;
+    printf("  Absolute value of %.2f (fabs) is: %.2f\n", x, fabs(x));
+
+    /* --- Trigonometric Functions --- */
+    printf("\nSection: Trigonometric Functions\n");
+    /*
+     * IMPORTANT: Trigonometric functions in C use radians, not degrees.
+     * To convert degrees to radians: radians = degrees * PI / 180.
+     */
+    pi = acos(-1.0); /* A portable way to get the value of PI */
+    angle_deg = 90.0;
+    angle_rad = angle_deg * pi / 180.0;
+
+    printf("  Angle: %.1f degrees (%.4f radians)\n", angle_deg, angle_rad);
+    printf("  Sine (sin) of %.1f degrees is: %.1f\n", angle_deg, sin(angle_rad));
+    printf("  Cosine (cos) of %.1f degrees is: %.1f\n", angle_deg, cos(angle_rad));
+
+    /* --- Exponential and Logarithmic Functions --- */
+    printf("\nSection: Exponential and Logarithmic Functions\n");
+    x = 1.0;
+    printf("  e to the power of %.1f (exp) is: %f\n", x, exp(x));
+
+    x = 100.0;
+    printf("  Natural logarithm of %.1f (log) is: %f\n", x, log(x));
+    printf("  Base-10 logarithm of %.1f (log10) is: %f\n", x, log10(x));
+
+    /* --- Rounding and Remainder Functions --- */
+    printf("\nSection: Rounding and Remainder Functions\n");
+    x = 9.2;
+    y = 9.8;
+    printf("  Ceiling of %.1f (ceil) is: %.1f\n", x, ceil(x));
+    printf("  Floor of %.1f (floor) is: %.1f\n", x, floor(x));
+    printf("  Ceiling of %.1f (ceil) is: %.1f\n", y, ceil(y));
+    printf("  Floor of %.1f (floor) is: %.1f\n", y, floor(y));
+    /* Note: round() is officially a C99 function, but may be available in C89 compilers. */
+    printf("  (The round() function is part of the C99 standard.)\n");
+
+    x = 10.0;
+    y = 3.0;
+    printf("  Floating-point remainder of %.1f / %.1f (fmod) is: %.1f\n", x, y, fmod(x, y));
+}
 
 
 
