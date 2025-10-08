@@ -147,6 +147,7 @@ void demoPreprocessor(void);
 void demoFile(void);
 void demoFileInOut(void);
 void demoBinInOut(void);
+void demoUnion(void);
 
 
 // Types and structures definitions
@@ -177,7 +178,7 @@ struct Item {
 };
 
 /*
- * Defines a new type called 'enum GameState'.
+ * An enumeration defines a new type.
  * By default, the compiler assigns integer values starting from 0.
  * So, MENU = 0, PLAYING = 1, PAUSED = 2, GAMEOVER = 3.
  */
@@ -207,6 +208,22 @@ struct InventoryItem {
     int id;
     double price;
     char name[50];
+};
+
+/*
+* A union is a special data type that allows different types of data to be stored 
+* in the same memory space. It can only store ONE value at a time.
+* The size of a union is determined by the size of its largest member.
+*/
+union Data {
+    int i;
+    float f;
+    char str[20];
+};
+/* Union to demonstrate "type punning" */
+union FloatBytes {
+    float f_val;
+    unsigned char bytes[4]; // Assume that float takes 4 bytes
 };
 
 
@@ -277,6 +294,7 @@ int main(int argc, char* argv[])
     //demoStructures();
     //demoStructurePtrs();
     //demoEnumerations();
+    //demoUnion();
 
     //demoStaticMemory();
     //demoDynamicMemory();
@@ -2554,5 +2572,69 @@ void demoBinInOut(void)
         printf("    Price: %.2f\n", items_to_read[i].price);
     }
     printf("  Data successfully restored from file.\n");
+}
+
+
+/*
+ * Demonstrates the definition and usage of unions.
+ */
+void demoUnion(void)
+{
+    /* C89 requires all variables to be declared at the beginning of a block */
+    union Data data;
+    union FloatBytes punner;
+    int i;
+
+    printf("\n--- DEMO: Unions ---\n");
+
+    /* --- 1. Size of a Union --- */
+    printf("\nSection: Size of a Union\n");
+    printf("  The size of a union is determined by its largest member.\n");
+    printf("  sizeof(int): %zu bytes\n", sizeof(int));
+    printf("  sizeof(float): %zu bytes\n", sizeof(float));
+    printf("  sizeof(char[20]): %zu bytes\n", sizeof(char[20]));
+    printf("  --------------------------\n");
+    printf("  sizeof(union Data): %zu bytes\n", sizeof(data));
+
+    /* --- 2. Using Union Members --- */
+    printf("\nSection: Using Union Members\n");
+    printf("  Important: only one union member is 'active' at any given time.\n\n");
+
+    // Assign a value to the 'i' (int) member
+    data.i = 10;
+    printf("  1. Assigned data.i = 10.\n");
+    printf("     data.i: %d\n", data.i);
+    // Values of data.f and data.str are now invalid (garbage)
+
+    // Assign a value to the 'f' (float) member
+    data.f = 220.5;
+    printf("\n  2. Assigned data.f = 220.5.\n");
+    printf("     data.f: %f\n", data.f);
+    // IMPORTANT: Memory has been overwritten!
+    printf("     data.i now contains garbage: %d (not 10!)\n", data.i);
+
+    // Assign a value to the 'str' (char array) member
+    strcpy(data.str, "Hello");
+    printf("\n  3. Assigned data.str = \"Hello\".\n");
+    printf("     data.str: %s\n", data.str);
+    // Again, memory has been overwritten!
+    printf("     data.f now contains garbage: %f (not 220.5!)\n", data.f);
+
+    /* --- 3. Practical Example: Type Punning --- */
+    printf("\nSection: Practical Example - 'Type Punning'\n");
+    printf("  'Type Punning' means interpreting the same bytes as different types.\n");
+    printf("  This is useful for low-level operations.\n\n");
+
+    punner.f_val = 3.14159;
+    printf("  We assigned a float value: %f\n", punner.f_val);
+    printf("  Now let's look at its byte representation in memory (in hex):\n  ");
+
+    // Print the bytes that make up the float
+    for (i = 0; i < sizeof(float); i++)
+    {
+        printf("%02X ", punner.bytes[i]);
+    }
+    printf("\n");
+    printf("  This allows us to analyze the internal representation of data.\n");
 }
 
