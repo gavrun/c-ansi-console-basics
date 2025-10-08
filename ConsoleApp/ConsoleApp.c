@@ -83,6 +83,8 @@ typedef int (*OperationFuncPtr)(int, int);
 void executeOperation(int x, int y, OperationFuncPtr operation);
 void demoArrays(void);
 void demoStrings(void);
+/* This function will take the command-line parameters from main */
+void demoMainCmdParams(int argc, char* argv[]);
 
 
 
@@ -96,7 +98,23 @@ void demoStrings(void);
 
 // MAIN
 
-int main()
+/*
+ * int main()
+ */
+
+ /*
+  * The 'main' function signature is changed to accept command-line parameters.
+  * 
+  * int main(int argc, char* argv[])
+  *
+  * int argc: "Argument Count". An integer that holds the number of arguments passed.
+  *           It is always at least 1, because the program's name is the first argument.
+  *
+  * char *argv[]: "Argument Vector". An array of character pointers (an array of strings).
+  *               Each string is one of the arguments passed to the program.
+  */
+
+int main(int argc, char* argv[])
 {
     // Windows console support UTF-8 and Cyrillic
     //SetConsoleCP(CP_UTF8);
@@ -108,6 +126,7 @@ int main()
     printf("\nUncomment a demo function if you don't see anything.\n");
 
     // Uncomment a demo function
+    
     //demoConsoleInOut();
     //demoVariablesAndTypes();
     //demoTypesCast();
@@ -117,11 +136,24 @@ int main()
     //demoControlFlowStructures();
     //demoFunctions();
     //demoFunctionPtr();
+    
     //demoScopes();
     //printf("\nAfter demoScopes finished, global_variable is now: %d\n", global_variable);
+    
     //demoFunctionDef();
     //demoArrays();
-    demoStrings();
+    //demoStrings();
+    
+    printf("\nProgram started with %d arguments\n", argc);
+    if (argc > 1) {
+        printf("Command line arguments:\n");
+        int i;
+        for (i = 0; i < argc; i++) {
+            printf("  argv[%d]: %s\n", i, argv[i]);
+        }
+        printf("\n");
+    }
+    demoMainCmdParams(argc, argv);
 
 
     return 0;
@@ -1380,7 +1412,49 @@ void demoStrings(void)
 }
 
 
+/*
+ * Demonstrates how to access and use command-line parameters.
+ */
+void demoMainCmdParams(int argc, char* argv[])
+{
+    int i;
 
+    printf("\n--- DEMO: Main Function Command-Line Parameters ---\n");
+
+    /* --- How to Run This Demo --- */
+    printf("\n  IMPORTANT: To see this demo work, you must run the compiled .exe\n");
+    printf("  file from a command prompt (like cmd.exe or PowerShell) and provide arguments.\n\n");
+    printf("  For example, after compiling, navigate to the executable's directory and run:\n");
+    printf("  > ConsoleApp.exe first_arg 123 \"An argument with spaces\"\n\n");
+    printf("  You can also configure 'Command Arguments' in your IDE's project debug settings.\n");
+
+    /* --- Analyzing argc and argv --- */
+    printf("\nSection: Analyzing argc and argv\n");
+
+    /* Print the number of arguments found */
+    printf("  Argument count (argc): %d\n", argc);
+
+    /* Check if any arguments were provided besides the program name */
+    if (argc == 1)
+    {
+        printf("  No additional command-line arguments were provided.\n");
+    }
+    else
+    {
+        printf("  The following arguments were provided:\n");
+    }
+
+    /* Loop through the argv array and print each argument string */
+    for (i = 0; i < argc; i++)
+    {
+        /*
+         * argv[0] is always the name of the program itself.
+         * argv[1] is the first actual argument.
+         * ...and so on.
+         */
+        printf("    argv[%d]: %s\n", i, argv[i]);
+    }
+}
 
 
 
